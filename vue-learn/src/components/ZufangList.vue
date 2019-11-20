@@ -34,6 +34,7 @@
 				this.axios({
 					url: this.next,
 					method: 'get',
+					headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN}
 				}).then(res => {
 					if(res['data']['next']==null){
 						this.next = '没有更多了'
@@ -64,6 +65,7 @@
 	  		params:{
 	  			city_name: localStorage.city_name,
 	  		},
+			headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN},
 	  		method: 'get',
 	  	}).then(res => {
 	  		this.zufanglist = res['data']['results'];

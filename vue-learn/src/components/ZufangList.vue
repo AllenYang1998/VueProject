@@ -4,10 +4,6 @@
 		<el-row v-for="(fang, index) in zufanglist">
 		  <el-col :span="24">
 			  <div class="grid-content bg-purple-dark" @click="sendParams(fang.id)">
-				<el-image
-				    style="width: 100px; height: 100px"
-				    :src="fang.img">
-				</el-image>
 				{{ fang.title }}
 			  </div>
 			  </el-col>

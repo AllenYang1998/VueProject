@@ -1,14 +1,16 @@
 <template>
 	<div id="test">
 		<h1>Test Page</h1>
-		<el-select placeholder="请选择"  v-model="city_name">
-			<el-option value ="广州">广州</el-option>
-			<el-option value ="深圳">深圳</el-option>
-		  </el-select>
-		<form>
-			<label for="search" >工作地点</label>
-			<el-input id="search" v-model="search" clearable></el-input>
-		</form>
+		<div style="margin-top: 15px;">
+		  <el-input placeholder="请输入内容" v-model="search" class="input-with-select">
+		    <el-select v-model="city_name" slot="prepend" placeholder="请选择">
+		      <el-option label="广州" value="广州"></el-option>
+		      <el-option label="深圳" value="深圳"></el-option>
+			  <el-option label="东莞" value="东莞"></el-option>
+		    </el-select>
+		    <el-button slot="append" icon="el-icon-search" @click="getWorkAddressList()"></el-button>
+		  </el-input>
+		</div>
 		<br />
 		<div>
 		  <div v-for="(item, index) in text">
@@ -46,6 +48,7 @@ import ZufangList from '../components/ZufangList.vue'
 		// 监听
 		watch:{
 			// 一旦工作地点搜索有信息输入请求百度地图API获取工作地点信息
+			/*
 			search(val){
 				if(val!=null&&this.city_name!=null){
 					this.$jsonp('https://api.map.baidu.com/place/v2/search',{
@@ -64,7 +67,7 @@ import ZufangList from '../components/ZufangList.vue'
 				else{
 					this.text = [];
 				}
-			},
+			},*/
 			city_name(){
 				localStorage.city_name = this.city_name;
 			},
@@ -73,6 +76,21 @@ import ZufangList from '../components/ZufangList.vue'
 			}
 		},
 		methods:{
+			// 获得工作地点坐标
+			getWorkAddressList(){
+				this.$jsonp('https://api.map.baidu.com/place/v2/search',{
+					query:this.search,
+					region:this.city_name,
+					ak: 'yEB3ABK1cIiDSGhYNMutGZwEfmW7QVPq',
+					output:'json',
+				})
+				.then(res => {
+					this.text = res['results'];
+					window.console.log(res['results']);
+				}).catch(err => {
+					console.log(err)
+				})
+			},	
 			// 点击查询到的工作地点提示 获取工作地点坐标
 			getWorkAdrress(val){
 				this.work_address = val['lat']+','+val['lng'];
@@ -142,5 +160,11 @@ import ZufangList from '../components/ZufangList.vue'
   .row-bg {
     padding: 10px 0;
     background-color: #f9fafc;
+  }
+  .el-select .el-input {
+      width: 130px;
+  }
+  .input-with-select .el-input-group__prepend {
+	background-color: #fff;
   }
 </style>

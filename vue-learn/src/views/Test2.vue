@@ -97,11 +97,12 @@
 				method: 'post',
 				data: this.loginForm,
 				}).then(res => {
-					location.reload();
 					localStorage.JWT_TOKEN = res['data']['token'];
 					localStorage.username = this.loginForm.username;
 					this.token = res['data']; 
 					window.console.log(res);
+					this.$router.push('/');
+					location.reload();
 				}).catch(err => {
 					this.tips = '登陆失败';
 					window.console.log(err);
@@ -117,6 +118,7 @@
 					window.console.log(res);
 					window.console.log(this.registerForm);
 					window.console.log("注册成功");
+					this.msg=0;
 				}).catch(err => {
 					this.tips = '注册失败';
 					window.console.log("注册失败");

@@ -85,46 +85,63 @@ import ZufangList from '../components/ZufangList.vue'
 			},	
 			// 点击查询到的工作地点提示 获取工作地点坐标
 			getWorkAdrress(val){
-				this.position = val['location']['lat']+','+val['location']['lng'];
-				this.address_name = val['address'];
-				localStorage.position = this.position;
-				localStorage.address_name = this.address_name;
-				this.text = '';
-				this.$jsonp('https://api.map.baidu.com/place/v2/search',{
-					query:'交通设施',
-					tag:'地铁站,公交车站,公交线路',
-					location:this.position,
-					ak: 'yEB3ABK1cIiDSGhYNMutGZwEfmW7QVPq',
-					output:'json',
-					radius:'1000',
-				})
-				.then(res => {
-					for(var i=0;i<res['results'].length;i++)
-					{
-						if(res['results'][i]['address'].indexOf("夜") != -1)
-						{
-							// 删除夜路
-							// window.console.log(res['results'][i]); 打印非夜路
-							res['results'].splice(i,1)
-						}
-					}
-					window.console.log(res['results']);
-				}).catch(err => {
-					console.log(err)
-				});
 				this.$confirm('此操作将提交并保存工作地点, 是否继续?', '提示', {
 					confirmButtonText: '确定',
 					cancelButtonText: '取消',
 					type: 'warning'
 				}).then(() => {
-				  this.$message({
+					this.position = val['location']['lat']+','+val['location']['lng'];
+					this.address_name = val['address'];
+					localStorage.position = this.position;
+					localStorage.address_name = this.address_name;
+					this.text_workaddress = '';
+					this.$jsonp('https://api.map.baidu.com/place/v2/search',{
+						query:'交通设施',
+						tag:'地铁站,公交车站,公交线路',
+						location:this.position,
+						ak: 'yEB3ABK1cIiDSGhYNMutGZwEfmW7QVPq',
+						output:'json',
+						radius:'1000',
+					})
+					.then(res => {
+						for(var i=0;i<res['results'].length;i++)
+						{
+							if(res['results'][i]['address'].indexOf("夜") != -1)
+							{
+								// 删除夜路
+								// window.console.log(res['results'][i]); 打印非夜路
+								res['results'].splice(i,1)
+							}
+						}
+						window.console.log(res['results']);
+						
+						this.axios({
+						url: 'http://127.0.0.1:8000/api/user/workaddress',
+						method: 'post',
+						data: {
+							address:this.address_name,
+							position:this.position,
+							transport:res['results']
+						},
+						headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN}
+						}).then(res => {
+							window.console.log('提交成功');
+						}).catch(err => {
+							this.tips = '提交失败';
+							window.console.log(err);
+						});
+						
+					}).catch(err => {
+						console.log(err)
+					});
+					this.$message({
 					type: 'success',
-					message: '删除成功!'
+					message: '提交成功!'
 				});
 					}).catch(() => {
 						this.$message({
 						type: 'info',
-						message: '已取消删除'
+						message: '已取消'
 					});          
 				});
 			},

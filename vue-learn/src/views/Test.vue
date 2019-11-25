@@ -13,13 +13,13 @@
 		</div>
 		<br />
 		<div>
-		  <div v-for="(item, index) in text">
-			  <div @click="getWorkAdrress(item.location)">
+		  <div v-for="(item, index) in text_workaddress">
+			  <div @click="getWorkAdrress(item)">
 				  {{ item.address }}
 			  </div>
 		  </div>
 		</div>
-		{{work_address}}
+		{{address}} {{position}} <el-button type="primary" v-show="is_button">提交工作地点</el-button>
 		<br />
 		<ZufangList msg="Hello,这是一个房源列表"/>
 	</div>
@@ -41,39 +41,17 @@ import ZufangList from '../components/ZufangList.vue'
 				type:"news",
 				city_name:localStorage.city_name,
 				search:'',
-				work_address:'', //工作地点坐标
-				text:[],
+				address_name:localStorage.address_name,
+				position:localStorage.position, //工作地点坐标
+				text_workaddress:[],
+				text_transport:[],
 			}
 		},
 		// 监听
 		watch:{
-			// 一旦工作地点搜索有信息输入请求百度地图API获取工作地点信息
-			/*
-			search(val){
-				if(val!=null&&this.city_name!=null){
-					this.$jsonp('https://api.map.baidu.com/place/v2/search',{
-						query:this.search,
-						region:this.city_name,
-						ak: 'yEB3ABK1cIiDSGhYNMutGZwEfmW7QVPq',
-						output:'json',
-					})
-					.then(res => {
-						this.text = res['results'];
-						window.console.log(res['results']);
-					}).catch(err => {
-						console.log(err)
-					})
-				}
-				else{
-					this.text = [];
-				}
-			},*/
 			city_name(){
 				localStorage.city_name = this.city_name;
 			},
-			work_address(){
-				localStorage.work_address = this.work_address;
-			}
 		},
 		methods:{
 			// 获得工作地点坐标
@@ -85,29 +63,70 @@ import ZufangList from '../components/ZufangList.vue'
 					output:'json',
 				})
 				.then(res => {
-					this.text = res['results'];
+					this.text_workaddress = res['results'];
 					window.console.log(res['results']);
 				}).catch(err => {
-					console.log(err)
+					window.console.log(err)
+				})
+				this.$jsonp('http://api.map.baidu.com/place/v2/search',{
+					query:'交通设施',
+					location: this.position,
+					radius: '1000',
+					ak: 'yEB3ABK1cIiDSGhYNMutGZwEfmW7QVPq',
+					output:'json',
+					tag: '地铁站,公交车站'
+				})
+				.then(res => {
+					this.text_transport = res['results'];
+					window.console.log(res['results']);
+				}).catch(err => {
+					window.console.log(err)
 				})
 			},	
 			// 点击查询到的工作地点提示 获取工作地点坐标
 			getWorkAdrress(val){
-				this.work_address = val['lat']+','+val['lng'];
+				this.position = val['location']['lat']+','+val['location']['lng'];
+				this.address_name = val['address'];
+				localStorage.position = this.position;
+				localStorage.address_name = this.address_name;
 				this.text = '';
 				this.$jsonp('https://api.map.baidu.com/place/v2/search',{
 					query:'交通设施',
 					tag:'地铁站,公交车站,公交线路',
-					location:this.work_address,
+					location:this.position,
 					ak: 'yEB3ABK1cIiDSGhYNMutGZwEfmW7QVPq',
 					output:'json',
 					radius:'1000',
 				})
 				.then(res => {
+					for(var i=0;i<res['results'].length;i++)
+					{
+						if(res['results'][i]['address'].indexOf("夜") != -1)
+						{
+							// 删除夜路
+							// window.console.log(res['results'][i]); 打印非夜路
+							res['results'].splice(i,1)
+						}
+					}
 					window.console.log(res['results']);
 				}).catch(err => {
 					console.log(err)
-				})
+				});
+				this.$confirm('此操作将提交并保存工作地点, 是否继续?', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+				  this.$message({
+					type: 'success',
+					message: '删除成功!'
+				});
+					}).catch(() => {
+						this.$message({
+						type: 'info',
+						message: '已取消删除'
+					});          
+				});
 			},
 		},
 		// 计算用于一些简单的渲染，效率比method高 ，{{type_msg}}

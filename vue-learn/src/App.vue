@@ -67,6 +67,8 @@
 				this.username='';
 				localStorage.username='';
 				localStorage.JWT_TOKEN='';
+				localStorage.address_name='';
+				localStorage.position='';
 				this.login=false;
 				location.reload();
 			}

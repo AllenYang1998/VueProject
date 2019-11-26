@@ -37,13 +37,20 @@
 	</div>
 	<br />
 	<div>
-	  <div v-for="(item, index) in text_workaddress">
-		  <div @click="getWorkAdrress(item)">
-			  {{ item.name }}|{{ item.address }}
-		  </div>
+	  <div v-for="(item, index) in text_workaddress" @click="getWorkAdrress(item)">
+			{{ item.name }}|{{ item.address }}
 	  </div>
 	</div>
-	<el-button type="primary" v-show="is_button">提交工作地点</el-button>
+	<el-dropdown>
+	  <span class="el-dropdown-link">
+	    工作地点<i class="el-icon-arrow-down el-icon--right"></i>
+	  </span>
+	  <el-dropdown-menu slot="dropdown">
+		<el-dropdown-item v-for="(item, index) in user_workaddress" >
+			<div @click="setUserWorkAddress(item)">{{ item.name }}</div>
+		</el-dropdown-item>
+	  </el-dropdown-menu>
+	</el-dropdown>
 	{{ name }} {{address_name}}
     <router-view/>
   </div>
@@ -60,11 +67,13 @@
 				name:localStorage.name,
 				city_name:localStorage.city_name,
 				search:'',
+				name: localStorage.name,
 				address_name:localStorage.address_name,
 				position:localStorage.position, //工作地点坐标
 				text_workaddress:[],
 				text_transport:[],
 				is_name:false,
+				user_workaddress:[],
 			}
 		},
 		watch:{
@@ -172,6 +181,14 @@
 						message: '已取消'
 					});          
 				});
+			},
+			// 点击获得用户的工作地点
+			setUserWorkAddress(val){
+				window.console.log(val);
+				localStorage.name = val['name'];
+				localStorage.address_name = val['address'];
+				localStorage.position = val['position'];
+				location.reload();
 			}
 		},
 		created() {
@@ -191,6 +208,17 @@
 			}).catch(err => {
 				console.log(err)
 			})
+			// 用户工作地点
+			this.axios({
+			url: this.server_url+'/api/user/workaddress',
+			method: 'get',
+			headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN}
+			}).then(res => {
+				this.user_workaddress = res['data'];
+				// window.console.log(res);
+			}).catch(err => {
+				window.console.log(err);
+			});
 		}
 	}
 </script>

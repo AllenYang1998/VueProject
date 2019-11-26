@@ -15,6 +15,7 @@
 <script>
 	export default {
 		name: 'ZufangList',
+		// 接收父组件的传过来的数据，组件类似与函数，props就是形参数
 		props: {
 			msg:String,
 		},
@@ -57,7 +58,7 @@
 	  created() {
 	  	// 获得第一页的租房信息
 	  	this.axios({
-	  		url: 'http://127.0.0.1:8000/api/zufang/',
+	  		url: this.server_url+'/api/zufang/',
 	  		params:{
 	  			city_name: localStorage.city_name,
 	  		},

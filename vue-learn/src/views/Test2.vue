@@ -1,13 +1,5 @@
 <template>
 	<div id="test2">
-		注册登陆界面
-		<!--
-		<div id="nav">
-		  <router-link to="/test2/login">登陆</router-link>|
-		  <router-link to="/test2/register">注册</router-link>
-		</div>
-		<router-view/>
-		-->
 		<div class="tab-tit">
 			<a href="javascript:;" @click="msg=0" :class="{'cur':msg===0}">登陆</a> |
 			<a href="javascript:;" @click="msg=1" :class="{'cur':msg===1}">注册</a>
@@ -15,25 +7,42 @@
 		<!--根据msg的值显示div,如果msg等于0，第一个div显示，其它三个div不显示。
 			如果msg等于1，第二个div显示，其它三个div不显示。以此类推-->
 		<div class="tab-con">
-			<div v-show="msg===0">
+			<div v-show="msg===0" style="margin-left: auto; margin-right: auto; width: 30%;">
 				<p>登陆</p>
-				<form>
-					账 号：<input v-model="loginForm.username"/><br />
-					密 码：<input type="password" v-model="loginForm.password"/>
-				</form>
-				<button @click="getInfo()">登陆</button>
+				<el-form ref="form" :model="form" label-width="80px">
+					<el-form-item label="账号">
+						<el-input v-model="loginForm.username"></el-input>
+					</el-form-item>
+					<el-form-item label="密码">
+						<el-input v-model="loginForm.password" type="password"></el-input>
+					</el-form-item>
+					<el-form-item>
+					    <el-button type="primary" @click="getInfo">登陆</el-button>
+						<el-button type="primary" @click="msg=1">注册</el-button>
+					</el-form-item>
+				</el-form>
 				<br />
 				{{tips}}
 			</div>
-			<div v-show="msg===1">
+			<div v-show="msg===1" style="margin-left: auto; margin-right: auto; width: 30%;">
 				<p>注册</p>
-				<form>
-					账   号：<input v-model="registerForm.username"/><br />
-					密   码：<input type="password" v-model="registerForm.password"/><br />
-					确认密码：<input type="password" v-model="rpassword"/>
-					{{tips}}
-				</form>
-				<button id="register" @click="postInfo()" v-show="registerButton">注册</button>
+				<el-form ref="form" :model="form" label-width="80px">
+					<el-form-item label="账号">
+						<el-input v-model="registerForm.username"></el-input>
+					</el-form-item>
+					<el-form-item label="密码">
+						<el-input v-model="registerForm.password" type="password"></el-input>
+					</el-form-item>
+					<el-form-item label="确认密码">
+						<el-input v-model="rpassword" type="password"></el-input>
+					</el-form-item>
+					<el-form-item>
+					    <el-button type="primary" @click="msg=0">登陆</el-button>
+						<el-button type="primary" @click="postInfo()">注册</el-button>
+					</el-form-item>
+				</el-form>
+				<br />
+				{{tips}}
 			</div>
 		</div>
 		
@@ -81,7 +90,6 @@
 			    * @ param {String}     key 键
 			    * @ param {String}     value 值，
 			    * @ param {String}     expired 过期时间，以分钟为单位，非必须
-			    * @ 由@IT·平头哥联盟-首席填坑官∙苏南 分享,交流：912594095
 			    */
 			    let source = this.source;
 			    source[key] = JSON.stringify(value);
@@ -93,7 +101,7 @@
 			// 登陆获取Token
 			getInfo(){
 				this.axios({
-				url: 'http://127.0.0.1:8000/api/token/',
+				url: this.server_url+'/api/token/',
 				method: 'post',
 				data: this.loginForm,
 				}).then(res => {
@@ -111,7 +119,7 @@
 			// 注册
 			postInfo(){
 				this.axios({
-				url: 'http://127.0.0.1:8000/api/user/register',
+				url: this.server_url+'/api/user/register',
 				method: 'post',
 				data: this.registerForm,
 				}).then(res => {

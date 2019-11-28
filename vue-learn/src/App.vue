@@ -7,30 +7,31 @@
 	  <router-link to="/test2">Test2</router-link>
     </div> -->
 	<el-menu router
-		 :default-active="$route.path" 
-		 class="el-menu-demo" 
-		 mode="horizontal"
-		 background-color="#303133"
-		 text-color="#fff"
-		 active-text-color="#ffd04b"
-		 theme="dark">  
-	  <el-menu-item index="/">主页</el-menu-item>
-	  <el-menu-item index="/test">列表</el-menu-item>
-	  <el-menu-item index="/test2" v-show="!login">注册登录</el-menu-item>
-	  <el-submenu  v-show="login">
-	    <template slot="title">{{username}}</template>
+		:default-active="$route.path" 
+		class="el-menu-demo" 
+		mode="horizontal"
+		background-color="#303133"
+		text-color="#fff"
+		active-text-color="#ffd04b"
+		theme="dark">  
+	<el-menu-item index="/">主页</el-menu-item>
+	<el-menu-item index="/test">列表</el-menu-item>
+	<el-menu-item index="/test2" v-show="!login">注册登录</el-menu-item>
+	<el-submenu  v-show="login" index>
+		<template slot="title">{{username}}</template>
 		<el-menu-item>个人中心</el-menu-item>
 		<el-menu-item index="/workaddress">实习地点</el-menu-item>
 		<el-menu-item>房源收藏</el-menu-item>
-	    <el-menu-item v-on:click="logout">退出</el-menu-item>
-	  </el-submenu>
+		<el-menu-item v-on:click="logout" index="/test2">退出</el-menu-item>
+	</el-submenu>
 	</el-menu>
 	<div style="margin-top: 15px;">
 	  <el-input placeholder="请输入内容" v-model="search" class="input-with-select">
 	    <el-select v-model="city_name" slot="prepend" placeholder="请选择">
-	      <el-option label="广州" value="广州"></el-option>
+			<el-option v-for="item in city_list" :label="item.city_name" :value="item.city_name"></el-option>
+	      <!-- <el-option label="广州" value="广州"></el-option>
 	      <el-option label="深圳" value="深圳"></el-option>
-		  <el-option label="东莞" value="东莞"></el-option>
+		  <el-option label="东莞" value="东莞"></el-option> -->
 	    </el-select>
 	    <el-button slot="append" icon="el-icon-search" @click="getWorkAddressList()"></el-button>
 	  </el-input>
@@ -41,7 +42,7 @@
 			{{ item.name }}|{{ item.address }}
 	  </div>
 	</div>
-	<el-dropdown>
+	<el-dropdown v-show="login">
 	  <span class="el-dropdown-link">
 	    工作地点<i class="el-icon-arrow-down el-icon--right"></i>
 	  </span>
@@ -74,6 +75,7 @@
 				text_transport:[],
 				is_name:false,
 				user_workaddress:[],
+				city_list:[],
 			}
 		},
 		watch:{
@@ -83,6 +85,9 @@
 				}else{
 					this.login=false;
 				}
+			},
+			city_name(){
+				localStorage.city_name = this.city_name;
 			}
 		},
 		methods:{
@@ -90,11 +95,14 @@
 				this.username='';
 				localStorage.username='';
 				localStorage.JWT_TOKEN='';
+				localStorage.name='';
 				localStorage.address_name='';
 				localStorage.position='';
+				localStorage.transport='';
+				this.user_workaddress=[];
 				this.login=false;
-				this.$router.push('/');
-				location.reload();
+				// this.$router.push('/');
+				// location.reload();
 			},
 			// 获得工作地点坐标
 			getWorkAddressList(){
@@ -106,20 +114,6 @@
 				})
 				.then(res => {
 					this.text_workaddress = res['results'];
-					window.console.log(res['results']);
-				}).catch(err => {
-					window.console.log(err)
-				})
-				this.$jsonp('http://api.map.baidu.com/place/v2/search',{
-					query:'交通设施',
-					location: this.position,
-					radius: '1000',
-					ak: 'yEB3ABK1cIiDSGhYNMutGZwEfmW7QVPq',
-					output:'json',
-					tag: '地铁站,公交车站'
-				})
-				.then(res => {
-					this.text_transport = res['results'];
 					window.console.log(res['results']);
 				}).catch(err => {
 					window.console.log(err)
@@ -157,7 +151,8 @@
 							name:val['name'],
 							address:this.address_name,
 							position:this.position,
-							transport:res['results']
+							transport:res['results'],
+							city_name:localStorage.city_name,
 						},
 						headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN}
 						}).then(res => {
@@ -188,15 +183,19 @@
 				localStorage.name = val['name'];
 				localStorage.address_name = val['address'];
 				localStorage.position = val['position'];
+				localStorage.transport = val['transport'];
+				localStorage.city_name = val['city_name'];
 				location.reload();
 			}
 		},
 		created() {
+			
 			if(localStorage.username!=""){
 				this.login=true;
 			}else{
 				this.login=false;
 			}
+			/*
 			// 获取用户所在地
 			this.$jsonp('https://api.map.baidu.com/location/ip',{
 				ak: 'yEB3ABK1cIiDSGhYNMutGZwEfmW7QVPq',
@@ -207,18 +206,34 @@
 				window.console.log(res);
 			}).catch(err => {
 				console.log(err)
-			})
-			// 用户工作地点
-			this.axios({
-			url: this.server_url+'/api/user/workaddress',
-			method: 'get',
-			headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN}
-			}).then(res => {
-				this.user_workaddress = res['data'];
-				// window.console.log(res);
-			}).catch(err => {
-				window.console.log(err);
-			});
+			})*/
+			if(this.city_list.length==0)
+			{
+				// 获得城市名
+				this.axios({
+				url: this.server_url+'/api/zufang/city/',
+				method: 'get',
+				}).then(res => {
+					this.city_list = res['data'];
+					window.console.log(res['data']);
+				}).catch(err => {
+					window.console.log(err);
+				})
+			}
+			if(this.user_workaddress.length==0)
+			{
+				// 用户工作地点
+				this.axios({
+				url: this.server_url+'/api/user/workaddress',
+				method: 'get',
+				headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN}
+				}).then(res => {
+					this.user_workaddress = res['data'];
+					window.console.log(res);
+				}).catch(err => {
+					window.console.log(err);
+				});
+			}
 		}
 	}
 </script>

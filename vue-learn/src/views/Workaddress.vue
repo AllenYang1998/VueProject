@@ -1,31 +1,6 @@
 <template>
 	<div id="workaddress">
 		<h3>实习地点</h3>
-		<!--
-		<div v-for="(item, index) in workaddresslist">
-			<div style="width:90%; height:auto; display:inline">
-				<el-collapse>
-					<el-collapse-item :name="index" :title="item.address">
-						<div>附件的地铁口/公交车站</div>
-						<div v-for="(item1, index) in item.transport">
-							<hr />
-							{{item1.name}}|{{item1.address}}
-						</div>
-					</el-collapse-item> 
-				</el-collapse>
-			</div>
-		</div>
-		-->
-		<!-- <el-card class="box-card" v-for="(item, index) in workaddresslist" style="float: left;width: auto; height: auto;">
-		  <div slot="header" class="clearfix">
-		    <span>{{item.address}}</span>
-		    <el-button style="float: right; padding: 3px 0" type="text">选为工作地点</el-button>
-		  </div>
-		  <div>附件的地铁口/公交车站</div>
-		  <div v-for="(item1, index) in item.transport">
-		  	{{item1.name}}|{{item1.address}}
-		  </div>
-		</el-card> -->
 		<el-table 
 			:data="tableData">
 			<el-table-column
@@ -59,7 +34,6 @@
 		name:'workaddress',
 		data(){
 			return{
-				// workaddresslist:[],
 				tableData:{}
 			}
 		},
@@ -68,6 +42,8 @@
 				localStorage.name = row['name'];
 				localStorage.position = row['position'];
 				localStorage.address_name = row['address'];
+				localStorage.transport = row['transport'];
+				localStorage.city_name = row['city_name']
 				// console.log(index, row);
 				location.reload();
 			},

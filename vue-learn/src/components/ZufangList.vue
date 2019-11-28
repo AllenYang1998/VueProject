@@ -57,19 +57,19 @@
 	  // 页面初始化时进行的操作
 	  created() {
 	  	// 获得第一页的租房信息
-	  	this.axios({
-	  		url: this.server_url+'/api/zufang/',
-	  		params:{
-	  			city_name: localStorage.city_name,
-	  		},
+		this.axios({
+			url: this.server_url+'/api/zufang/',
+			params:{
+				city_name: localStorage.city_name,
+			},
 			headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN},
-	  		method: 'get',
-	  	}).then(res => {
-	  		this.zufanglist = res['data']['results'];
-	  		this.next = res['data']['next'];
-	  		console.log(this.zufanglist);
-	  		window.console.log(res);
-	  	})
+			method: 'get',
+		}).then(res => {
+			this.zufanglist = res['data']['results'];
+			this.next = res['data']['next'];
+			console.log(this.zufanglist);
+			window.console.log(res);
+		})
 	  }
 	}
 </script>

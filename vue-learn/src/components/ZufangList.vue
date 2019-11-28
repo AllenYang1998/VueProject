@@ -39,8 +39,8 @@
 						this.next = res['data']['next'];
 					}
 					this.zufanglist.push.apply(this.zufanglist, res['data']['results']);
-					console.log(this.zufanglist);
-					window.console.log(res);
+					// console.log(this.zufanglist);
+					// window.console.log(res);
 				})
 			},
 			// 跳转到详细信息页面传递房源id

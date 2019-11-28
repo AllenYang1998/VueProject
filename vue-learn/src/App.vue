@@ -132,17 +132,20 @@
 					localStorage.name = val['name'];
 					localStorage.position = this.position;
 					localStorage.address_name = this.address_name;
+					// 清空地点提示列表
 					this.text_workaddress = '';
+					// 获取工作地点附件的站
 					this.$jsonp('https://api.map.baidu.com/place/v2/search',{
 						query:'交通设施',
-						tag:'地铁站,公交车站,公交线路',
+						tag:'站',
 						location:this.position,
 						ak: 'yEB3ABK1cIiDSGhYNMutGZwEfmW7QVPq',
 						output:'json',
 						radius:'1000',
 					})
 					.then(res => {
-						window.console.log(res);
+						// 请求结果反序列化
+						localStorage.transport = JSON.stringify(res);
 						// 向后台提交实习地点数据
 						this.axios({
 						url: this.server_url+'/api/user/workaddress',
@@ -151,7 +154,8 @@
 							name:val['name'],
 							address:this.address_name,
 							position:this.position,
-							transport:res['results'],
+							// 注意res是一个对象，不知道为什么直接传到后台就变成str
+							transport:JSON.stringify(res),
 							city_name:localStorage.city_name,
 						},
 						headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN}
@@ -195,18 +199,6 @@
 			}else{
 				this.login=false;
 			}
-			/*
-			// 获取用户所在地
-			this.$jsonp('https://api.map.baidu.com/location/ip',{
-				ak: 'yEB3ABK1cIiDSGhYNMutGZwEfmW7QVPq',
-			})
-			.then(res => {
-				localStorage.city_name = res['content']['address_detail']['city'].replace('市','');
-				this.city_name = localStorage.city_name;
-				window.console.log(res);
-			}).catch(err => {
-				console.log(err)
-			})*/
 			if(this.city_list.length==0)
 			{
 				// 获得城市名
@@ -215,7 +207,6 @@
 				method: 'get',
 				}).then(res => {
 					this.city_list = res['data'];
-					window.console.log(res['data']);
 				}).catch(err => {
 					window.console.log(err);
 				})
@@ -229,7 +220,6 @@
 				headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN}
 				}).then(res => {
 					this.user_workaddress = res['data'];
-					window.console.log(res);
 				}).catch(err => {
 					window.console.log(err);
 				});

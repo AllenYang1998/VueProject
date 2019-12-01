@@ -30,7 +30,11 @@
 			getNext(){
 				this.axios({
 					url: this.next,
-					method: 'get',
+					method: 'post',
+					data:{
+						transport:localStorage.transport,
+						city_name: localStorage.city_name
+					},
 					headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN}
 				}).then(res => {
 					if(res['data']['next']==null){
@@ -58,12 +62,19 @@
 	  created() {
 	  	// 获得第一页的租房信息
 		this.axios({
-			url: this.server_url+'/api/zufang/',
+			url: this.server_url+'/api/zufang/test/',
+			data:{
+				transport:localStorage.transport,
+				city_name: localStorage.city_name
+			},
+			/*
 			params:{
+				transport:localStorage.transport,
 				city_name: localStorage.city_name,
 			},
+			*/
 			headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN},
-			method: 'get',
+			method: 'post',
 		}).then(res => {
 			this.zufanglist = res['data']['results'];
 			this.next = res['data']['next'];

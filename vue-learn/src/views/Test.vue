@@ -38,15 +38,15 @@ import ZufangList from '../components/ZufangList.vue'
 		},
 		// 页面初始化时进行的操作
 		created() {
-			this.axios({
-				url: this.server_url+'/api/zufang/test/',
-				method: 'post',
-				data:{
-					transport:localStorage.transport
-				}
-			}).then(res => {
-				window.console.log(res);
-			})
+			// this.axios({
+			// 	url: this.server_url+'/api/zufang/test/',
+			// 	method: 'post',
+			// 	data:{
+			// 		transport:localStorage.transport
+			// 	}
+			// }).then(res => {
+			// 	window.console.log(res);
+			// })
 		}
 	}
 </script>

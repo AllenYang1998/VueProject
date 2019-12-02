@@ -71,6 +71,16 @@
 				this.area_name_2 = res['data']['area_name_2'];
 				this.origins = res['data']['position'];
 		   })
+		   this.axios({
+				url: this.server_url+'/api/zufang/transport/',
+				method: 'post',
+				data:{
+					id:this.id
+				}
+		   }).then(res => {
+				window.console.log(res)
+		   })
+		   
 		},
 		beforeUpdate(){
 			// 计算机距离

@@ -29,9 +29,6 @@
 	  <el-input placeholder="请输入内容" v-model="search" class="input-with-select">
 	    <el-select v-model="city_name" slot="prepend" placeholder="请选择">
 			<el-option v-for="item in city_list" :label="item.city_name" :value="item.city_name"></el-option>
-	      <!-- <el-option label="广州" value="广州"></el-option>
-	      <el-option label="深圳" value="深圳"></el-option>
-		  <el-option label="东莞" value="东莞"></el-option> -->
 	    </el-select>
 	    <el-button slot="append" icon="el-icon-search" @click="getWorkAddressList()"></el-button>
 	  </el-input>

@@ -7,7 +7,7 @@
 		<!--根据msg的值显示div,如果msg等于0，第一个div显示，其它三个div不显示。
 			如果msg等于1，第二个div显示，其它三个div不显示。以此类推-->
 		<div class="tab-con">
-			<div v-show="msg===0" style="margin-left: auto; margin-right: auto; width: 30%;">
+			<div v-show="msg===0">
 				<p>登陆</p>
 				<el-form ref="form" :model="form" label-width="80px">
 					<el-form-item label="账号">
@@ -24,7 +24,7 @@
 				<br />
 				{{tips}}
 			</div>
-			<div v-show="msg===1" style="margin-left: auto; margin-right: auto; width: 30%;">
+			<div v-show="msg===1">
 				<p>注册</p>
 				<el-form ref="form" :model="form" label-width="80px">
 					<el-form-item label="账号">

@@ -7,13 +7,21 @@
 		      <el-image :src="img" style='height: 400px;width: 400px;'></el-image>
 		    </el-carousel-item>
 		</el-carousel>
-		<div class="address">
+		<div class="left">
 			<font>{{city_name}}</font>-
 			<font>{{area_name_1}}</font>-
 			<font>{{area_name_2}}</font>
 		</div>
-		<p>{{recommend}}</p>
+		<div class="left">
+			{{recommend}}
+		</div>
 		<div v-html="description"></div>
+		
+		<el-row>
+			<el-button @click="queryStr()">查询Star</el-button>
+			<el-button type="warning" icon="el-icon-star-off" circle @click="addStar()"></el-button>
+			<el-button type="danger" icon="el-icon-delete" circle @click="deleteStar()"></el-button>
+		</el-row>
 	</div>
 </template>
 
@@ -22,7 +30,7 @@
 		name:'detail',
 		data(){
 			return{
-				id:'',
+				zufang_id:'',
 				title:'',
 				tags:{},
 				imgs:[],
@@ -36,9 +44,64 @@
 				duration:'',
 			}
 		},
+		methods:{
+			queryStr(){
+				this.axios({
+					url: this.server_url + '/api/user/star',
+					method: 'get',
+					params:{
+						query:'all',
+					},
+					headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN}
+				}).then(res => {
+					window.console.log(res);
+				})
+			},
+			addStar(){
+				this.axios({
+					url: this.server_url + '/api/user/star',
+					method: 'post',
+					data:{
+						zufang_id: this.zufang_id
+					},
+					headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN}
+				}).then(res => {
+					window.console.log(res);
+				})
+			},
+			deleteStar(){
+				this.axios({
+					url: this.server_url + '/api/user/star',
+					method: 'delete',
+					data:{
+						zufang_id: this.zufang_id
+					},
+					headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN}
+				}).then(res => {
+					window.console.log(res);
+				})
+			},
+		},
 		computed:{
 			recommend(){
-				// 十分钟原则 二十分钟原则 三十分钟原则
+				// 计算机距离
+				if(this.distance=='' || this.duration=='')
+				{
+					this.$jsonp('https://api.map.baidu.com/routematrix/v2/riding',{
+						ak: 'AktQnb3RWmVG2OsYcNcGXfZPFirATy4L',
+						origins: this.origins,
+						destinations: localStorage.position,
+					})
+					.then(res => {
+						// 距离
+						this.distance = res['result'][0]['distance']['value'];
+						// 用时
+						this.duration = res['result'][0]['duration']['value'];
+					}).catch(err => {
+						window.console.log(err);
+					})
+				}
+				// 先模拟用户
 				if(this.distance>=4000)
 				{
 					return '建议乘坐公交/地铁上班';
@@ -54,12 +117,10 @@
 			}
 			
 		},
-		watch:{
-		},
 		created() {
-		   this.id = this.$route.params['id'];
+		   this.zufang_id = this.$route.params['id'];
 		   this.axios({
-				url: this.server_url+'/api/zufang/'+this.id,
+				url: this.server_url+'/api/zufang/'+this.zufang_id,
 				method: 'get'
 		   }).then(res => {
 				this.title = res['data']['title'];
@@ -75,29 +136,11 @@
 				url: this.server_url+'/api/zufang/transport/',
 				method: 'post',
 				data:{
-					id:this.id
+					id:this.zufang_id
 				}
 		   }).then(res => {
 				window.console.log(res)
 		   })
-		   
-		},
-		beforeUpdate(){
-			// 计算机距离
-			this.$jsonp('https://api.map.baidu.com/routematrix/v2/riding',{
-				ak: 'AktQnb3RWmVG2OsYcNcGXfZPFirATy4L',
-				origins: this.origins,
-				destinations: localStorage.position,
-			})
-			.then(res => {
-				// 距离
-				this.distance = res['result'][0]['distance']['value'];
-				// 用时
-				this.duration = res['result'][0]['duration']['value'];
-				window.console.log(res['result'][0]);
-			}).catch(err => {
-				window.console.log(err);
-			})
 		}
 	}
 </script>
@@ -122,7 +165,7 @@
 	  float:left;
 	  margin-top: 1.5px;
   }
-  .address{
-	  float:left;
+  .left{
+	  /* float:left; */
   }
 </style>

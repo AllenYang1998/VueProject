@@ -1,10 +1,10 @@
 <template>
 	<div id="ZufangList">
 		<h3>{{msg}}</h3>
-		<el-row v-for="(fang, index) in zufanglist">
+		<el-row v-for="(zufang, index) in zufanglist">
 		  <el-col :span="24">
-			  <div class="grid-content bg-purple-dark" @click="sendParams(fang.id)">
-				{{ fang.title }}
+			  <div class="grid-content bg-purple-dark" @click="sendParams(zufang.id)">
+				{{ zufang.title }}|{{ zufang.area_name_1}}|{{ zufang.area_name_2}}|{{ zufang.price}}
 			  </div>
 			  </el-col>
 		</el-row>

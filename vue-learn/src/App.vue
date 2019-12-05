@@ -21,7 +21,7 @@
 		<template slot="title">{{username}}</template>
 		<el-menu-item>个人中心</el-menu-item>
 		<el-menu-item index="/workaddress">实习地点</el-menu-item>
-		<el-menu-item>房源收藏</el-menu-item>
+		<el-menu-item index="/star">房源收藏</el-menu-item>
 		<el-menu-item v-on:click="logout" index="/test2">退出</el-menu-item>
 	</el-submenu>
 	</el-menu>
@@ -125,8 +125,10 @@
 				}).then(() => {
 					this.position = val['location']['lat']+','+val['location']['lng'];
 					this.address_name = val['address'];
-					this.name = val['name']
+					this.name = val['name'];
+					this.area_name_1 = val['area'];
 					localStorage.name = val['name'];
+					localStorage.area_name_1  = val['area'];
 					localStorage.position = this.position;
 					localStorage.address_name = this.address_name;
 					// 清空地点提示列表
@@ -151,6 +153,7 @@
 							name:val['name'],
 							address:this.address_name,
 							position:this.position,
+							// area_name_1:val['area'];
 							// 注意res是一个对象，不知道为什么直接传到后台就变成str
 							transport:JSON.stringify(res),
 							city_name:localStorage.city_name,

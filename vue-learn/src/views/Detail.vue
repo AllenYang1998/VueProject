@@ -52,7 +52,7 @@
 					params:{
 						query:'all',
 					},
-					headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN}
+					headers: {'Authorization': this.Authorization_token}
 				}).then(res => {
 					window.console.log(res);
 				})
@@ -64,7 +64,7 @@
 					data:{
 						zufang_id: this.zufang_id
 					},
-					headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN}
+					headers: {'Authorization': this.Authorization_token}
 				}).then(res => {
 					window.console.log(res);
 				})
@@ -76,7 +76,7 @@
 					data:{
 						zufang_id: this.zufang_id
 					},
-					headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN}
+					headers: {'Authorization': this.Authorization_token}
 				}).then(res => {
 					window.console.log(res);
 				})

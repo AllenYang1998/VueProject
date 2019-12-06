@@ -59,7 +59,7 @@
 		name:'app',
 		data(){
 			return{
-				username:localStorage.username,
+				username:sessionStorage.username,
 				login:false,
 				loginstatus:'',
 				name:localStorage.name,
@@ -77,7 +77,7 @@
 		},
 		watch:{
 			loginstatus(){
-				if(localStorage.username.length!=""){
+				if(sessionStorage.username.length!=""){
 					this.login=true;
 				}else{
 					this.login=false;
@@ -90,8 +90,8 @@
 		methods:{
 			logout(event){
 				this.username='';
-				localStorage.username='';
-				localStorage.JWT_TOKEN='';
+				sessionStorage.username='';
+				sessionStorage.JWT_TOKEN='';
 				localStorage.name='';
 				localStorage.address_name='';
 				localStorage.position='';
@@ -158,7 +158,7 @@
 							transport:JSON.stringify(res),
 							city_name:localStorage.city_name,
 						},
-						headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN}
+						headers: {'Authorization': " JWT "+sessionStorage.JWT_TOKEN}
 						}).then(res => {
 							window.console.log('提交成功');
 						}).catch(err => {
@@ -217,7 +217,7 @@
 				this.axios({
 				url: this.server_url+'/api/user/workaddress',
 				method: 'get',
-				headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN}
+				headers: {'Authorization': this.Authorization_token}
 				}).then(res => {
 					this.user_workaddress = res['data'];
 				}).catch(err => {

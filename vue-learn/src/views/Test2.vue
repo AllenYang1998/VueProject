@@ -105,8 +105,8 @@
 				method: 'post',
 				data: this.loginForm,
 				}).then(res => {
-					localStorage.JWT_TOKEN = res['data']['token'];
-					localStorage.username = this.loginForm.username;
+					sessionStorage.JWT_TOKEN = res['data']['token'];
+					sessionStorage.username = this.loginForm.username;
 					this.token = res['data']; 
 					window.console.log(res);
 					this.$router.push('/');

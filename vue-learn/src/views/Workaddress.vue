@@ -55,7 +55,7 @@
 				data:{
 					id:row['id']
 				},
-				headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN}
+				headers: {'Authorization': this.Authorization_token}
 				}).then(res => {
 					window.console.log(res);
 				}).catch(err => {
@@ -68,7 +68,7 @@
 			this.axios({
 			url: this.server_url+'/api/user/workaddress',
 			method: 'get',
-			headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN}
+			headers: {'Authorization': this.Authorization_token}
 			}).then(res => {
 				// for(var i=0;i<res['data'].length;i++)
 				// {

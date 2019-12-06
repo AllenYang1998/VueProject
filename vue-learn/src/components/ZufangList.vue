@@ -35,7 +35,7 @@
 						transport:localStorage.transport,
 						city_name: localStorage.city_name
 					},
-					headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN}
+					headers: {'Authorization': this.Authorization_token}
 				}).then(res => {
 					if(res['data']['next']==null){
 						this.next = '没有更多了'
@@ -73,7 +73,7 @@
 				city_name: localStorage.city_name,
 			},
 			*/
-			headers: {'Authorization': " JWT "+localStorage.JWT_TOKEN},
+			headers: {'Authorization': this.Authorization_token},
 			method: 'post',
 		}).then(res => {
 			this.zufanglist = res['data']['results'];

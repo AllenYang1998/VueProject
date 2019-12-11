@@ -42,6 +42,10 @@
 				origins:'',
 				distance:'',
 				duration:'',
+				
+				workTransportList:[],
+				zufangTransportList:[],
+				
 			}
 		},
 		methods:{
@@ -59,14 +63,14 @@
 			},
 			addStar(){
 				this.axios({
-					url: this.server_url + '/api/user/star',
+					url: this.server_url + '/api/user/star/',
 					method: 'post',
 					data:{
 						zufang_id: this.zufang_id
 					},
 					headers: {'Authorization': this.Authorization_token}
 				}).then(res => {
-					window.console.log(res);
+					window.console.log('res');
 				})
 			},
 			deleteStar(){
@@ -115,14 +119,15 @@
 					return '建议步行';
 				}
 			}
-			
 		},
 		created() {
-		   this.zufang_id = this.$route.params['id'];
-		   this.axios({
-				url: this.server_url+'/api/zufang/'+this.zufang_id,
-				method: 'get'
-		   }).then(res => {
+			// 打印工作地点的周边
+			// window.console.log(JSON.parse(localStorage.transport)['results']);
+			this.zufang_id = this.$route.params['id'];
+			this.axios({
+			url: this.server_url+'/api/zufang/'+this.zufang_id,
+			method: 'get'
+			}).then(res => {
 				this.title = res['data']['title'];
 				this.tags = res['data']['tags'];
 				this.imgs = res['data']['zufang_img_list'].split(",");
@@ -131,16 +136,34 @@
 				this.area_name_1 = res['data']['area_name_1'];
 				this.area_name_2 = res['data']['area_name_2'];
 				this.origins = res['data']['position'];
-		   })
-		   this.axios({
+			})
+			// 打印房源的周边
+			this.axios({
 				url: this.server_url+'/api/zufang/transport/',
 				method: 'post',
 				data:{
 					id:this.zufang_id
 				}
-		   }).then(res => {
-				window.console.log(res)
-		   })
+			}).then(res => {
+				this.zufangTransportList = res['data']
+				// var TransportList = res['data']
+				// for(var i=0;i<TransportList.length;i++)
+				// {
+				// 	this.TransportList[i]['address'] = workTransport_list[i]['address'].split(";")
+				// }
+				// this.zufangTransportList = TransportList;
+			})
+			this.workTransportList = JSON.parse(localStorage.transport)['results'];
+			// var TransportList = JSON.parse(localStorage.transport)['results']
+			// for(var i=0;i<TransportList.length;i++)
+			// {
+			// 	this.TransportList[i]['address'] = workTransport_list[i]['address'].split(";")
+			// }
+			// this.workTransportList = TransportList
+		},
+		updated() {
+			window.console.log(this.zufangTransportList);
+			window.console.log(this.workTransportList);
 		}
 	}
 </script>

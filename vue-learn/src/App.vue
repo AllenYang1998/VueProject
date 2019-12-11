@@ -135,12 +135,12 @@
 					this.text_workaddress = '';
 					// 获取工作地点附件的站
 					this.$jsonp('https://api.map.baidu.com/place/v2/search',{
-						query:'交通设施',
-						tag:'站',
+						query:'交通',
+						tag:'地铁,公交',
 						location:this.position,
 						ak: 'yEB3ABK1cIiDSGhYNMutGZwEfmW7QVPq',
 						output:'json',
-						radius:'1000',
+						radius:'800',
 					})
 					.then(res => {
 						// 请求结果反序列化
@@ -193,7 +193,6 @@
 			}
 		},
 		created() {
-			
 			if(localStorage.username!=""){
 				this.login=true;
 			}else{
@@ -215,7 +214,7 @@
 			{
 				// 用户工作地点
 				this.axios({
-				url: this.server_url+'/api/user/workaddress',
+				url: this.server_url+'/api/user/workaddress/',
 				method: 'get',
 				headers: {'Authorization': this.Authorization_token}
 				}).then(res => {

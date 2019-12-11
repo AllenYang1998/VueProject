@@ -77,7 +77,7 @@
 		},
 		created() {
 			this.axios({
-			url: this.server_url+'/api/zufang/star/',
+			url: this.server_url+'/api/user/star/',
 			method: 'get',
 			headers: {'Authorization': this.Authorization_token}
 			}).then(res => {

@@ -119,7 +119,7 @@
 			// 注册
 			postInfo(){
 				this.axios({
-				url: this.server_url+'/api/user/register',
+				url: this.server_url+'/api/user/register/',
 				method: 'post',
 				data: this.registerForm,
 				}).then(res => {

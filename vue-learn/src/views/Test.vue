@@ -1,6 +1,6 @@
 <template>
 	<div id="test">
-		<h3>Test Page</h3>
+		<h3>动态匹配房源</h3>
 		<ZufangList msg="Hello,这是一个房源列表"/>
 	</div>
 </template>
@@ -38,15 +38,6 @@ import ZufangList from '../components/ZufangList.vue'
 		},
 		// 页面初始化时进行的操作
 		created() {
-			// this.axios({
-			// 	url: this.server_url+'/api/zufang/test/',
-			// 	method: 'post',
-			// 	data:{
-			// 		transport:localStorage.transport
-			// 	}
-			// }).then(res => {
-			// 	window.console.log(res);
-			// })
 		}
 	}
 </script>

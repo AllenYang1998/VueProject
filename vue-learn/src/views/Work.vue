@@ -1,5 +1,5 @@
 <template>
-	<div id="workaddress">
+	<div id="work">
 		<h3>实习地点</h3>
 		<el-table 
 			:data="tableData">
@@ -31,7 +31,7 @@
 
 <script>
 	export default{
-		name:'workaddress',
+		name:'work',
 		data(){
 			return{
 				tableData:{}

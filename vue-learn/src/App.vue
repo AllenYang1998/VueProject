@@ -16,11 +16,11 @@
 		theme="dark">  
 	<el-menu-item index="/">主页</el-menu-item>
 	<el-menu-item index="/test">列表</el-menu-item>
-	<el-menu-item index="/test2" v-show="!login">注册登录</el-menu-item>
-	<el-submenu  v-show="login" index>
+	<el-menu-item index="/test2" v-show="!is_login">注册登录</el-menu-item>
+	<el-submenu  v-show="is_login" index>
 		<template slot="title">{{username}}</template>
-		<el-menu-item>个人中心</el-menu-item>
-		<el-menu-item index="/workaddress">实习地点</el-menu-item>
+		<el-menu-item index="/require">租房需求</el-menu-item>
+		<el-menu-item index="/work">实习地点</el-menu-item>
 		<el-menu-item index="/star">房源收藏</el-menu-item>
 		<el-menu-item v-on:click="logout" index="/test2">退出</el-menu-item>
 	</el-submenu>
@@ -35,19 +35,19 @@
 	</div>
 	<br />
 	<div>
-	  <div v-for="(item, index) in text_workaddress" @click="getWorkAdrress(item)">
+	  <div v-for="(item, index) in search_workaddress" @click="getWorkAdrress(item)">
 			{{ item.name }}|{{ item.address }}
 	  </div>
 	</div>
-	<el-dropdown v-show="login">
-	  <span class="el-dropdown-link">
-	    工作地点<i class="el-icon-arrow-down el-icon--right"></i>
-	  </span>
-	  <el-dropdown-menu slot="dropdown">
-		<el-dropdown-item v-for="(item, index) in user_workaddress" >
-			<div @click="setUserWorkAddress(item)">{{ item.name }}</div>
-		</el-dropdown-item>
-	  </el-dropdown-menu>
+	<el-dropdown v-show="is_login">
+		<span class="el-dropdown-link">
+			工作地点<i class="el-icon-arrow-down el-icon--right"></i>
+		</span>
+		<el-dropdown-menu slot="dropdown">
+			<el-dropdown-item v-for="(item, index) in user_workaddress" >
+				<div @click="setUserWorkAddress(item)">{{ item.name }}</div>
+			</el-dropdown-item>
+		</el-dropdown-menu>
 	</el-dropdown>
 	{{ name }} {{address_name}}
     <router-view/>
@@ -60,29 +60,25 @@
 		data(){
 			return{
 				username:sessionStorage.username,
-				login:false,
-				loginstatus:'',
 				name:localStorage.name,
 				city_name:localStorage.city_name,
 				search:'',
 				name: localStorage.name,
 				address_name:localStorage.address_name,
 				position:localStorage.position, //工作地点坐标
-				text_workaddress:[],
+				search_workaddress:[],
 				text_transport:[],
 				is_name:false,
 				user_workaddress:[],
 				city_list:[],
 			}
 		},
+		computed:{
+			is_login(){
+				return sessionStorage.getItem("username");
+			}
+		},
 		watch:{
-			loginstatus(){
-				if(sessionStorage.username.length!=""){
-					this.login=true;
-				}else{
-					this.login=false;
-				}
-			},
 			city_name(){
 				localStorage.city_name = this.city_name;
 			}
@@ -90,16 +86,20 @@
 		methods:{
 			logout(event){
 				this.username='';
-				sessionStorage.username='';
-				sessionStorage.JWT_TOKEN='';
+				sessionStorage.removeItem('username');
+				sessionStorage.removeItem('JWT_TOKEN');
 				localStorage.name='';
 				localStorage.address_name='';
 				localStorage.position='';
 				localStorage.transport='';
+				this.address_name='';
 				this.user_workaddress=[];
 				this.login=false;
-				// this.$router.push('/');
-				// location.reload();
+				this.name='';
+				this.$router.push('/');
+				localStorage.clear();
+				sessionStorage.clear();
+				location.reload();
 			},
 			// 获得工作地点坐标
 			getWorkAddressList(){
@@ -110,8 +110,7 @@
 					output:'json',
 				})
 				.then(res => {
-					this.text_workaddress = res['results'];
-					window.console.log(res['results']);
+					this.search_workaddress = res['results'];
 				}).catch(err => {
 					window.console.log(err)
 				})
@@ -132,7 +131,7 @@
 					localStorage.position = this.position;
 					localStorage.address_name = this.address_name;
 					// 清空地点提示列表
-					this.text_workaddress = '';
+					this.search_workaddress = '';
 					// 获取工作地点附件的站
 					this.$jsonp('https://api.map.baidu.com/place/v2/search',{
 						query:'交通',
@@ -143,11 +142,13 @@
 						radius:'800',
 					})
 					.then(res => {
-						// 请求结果反序列化
+						window.console.log(res)
+						
+						// 请求结果序列化
 						localStorage.transport = JSON.stringify(res);
 						// 向后台提交实习地点数据
 						this.axios({
-						url: this.server_url+'/api/user/workaddress',
+						url: this.server_url+'/api/user/workaddress/',
 						method: 'post',
 						data: {
 							name:val['name'],
@@ -193,10 +194,9 @@
 			}
 		},
 		created() {
-			if(localStorage.username!=""){
-				this.login=true;
-			}else{
-				this.login=false;
+			if(!localStorage.getItem("zufanglist"))
+			{
+				
 			}
 			if(this.city_list.length==0)
 			{

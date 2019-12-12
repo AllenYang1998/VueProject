@@ -2,13 +2,12 @@
 	<div id="ZufangList">
 		<h3>{{msg}}</h3>
 		<el-row v-for="(zufang, index) in zufanglist">
-		  <el-col :span="24">
-			  <div class="grid-content bg-purple-dark" @click="sendParams(zufang.id)">
-				{{ zufang.title }}|{{ zufang.area_name_1}}|{{ zufang.area_name_2}}|{{ zufang.price}}
-			  </div>
-			  </el-col>
+			<el-col>
+				<div class="grid-content bg-purple-light" @click="sendParams(zufang.id)">
+					{{ zufang.title }}|{{ zufang.area_name_1}}|{{ zufang.area_name_2}}|{{ zufang.price}}
+				</div>
+			</el-col>
 		</el-row>
-		<button @click="getNext()">获得更多</button>
 	</div>
 </template>
 
@@ -22,31 +21,10 @@
 		data(){
 			return{
 				zufanglist:[],
-				next:'', //下一页
+				zufanglistsize:0,
 			}
 		},
 		methods:{
-			// 获取更多租房信息
-			getNext(){
-				this.axios({
-					url: this.next,
-					method: 'post',
-					data:{
-						transport:localStorage.transport,
-						city_name: localStorage.city_name
-					},
-					headers: {'Authorization': this.Authorization_token}
-				}).then(res => {
-					if(res['data']['next']==null){
-						this.next = '没有更多了'
-					}else{
-						this.next = res['data']['next'];
-					}
-					this.zufanglist.push.apply(this.zufanglist, res['data']['results']);
-					// console.log(this.zufanglist);
-					// window.console.log(res);
-				})
-			},
 			// 跳转到详细信息页面传递房源id
 			sendParams(val){
 				this.$router.push({
@@ -57,31 +35,24 @@
 					}
 				})
 			},
-	  },
-	  // 页面初始化时进行的操作
-	  created() {
-	  	// 获得第一页的租房信息
-		this.axios({
-			url: this.server_url+'/api/zufang/test/',
-			data:{
-				transport:localStorage.transport,
-				city_name: localStorage.city_name
-			},
-			/*
-			params:{
-				transport:localStorage.transport,
-				city_name: localStorage.city_name,
-			},
-			*/
-			headers: {'Authorization': this.Authorization_token},
-			method: 'post',
-		}).then(res => {
-			this.zufanglist = res['data']['results'];
-			this.next = res['data']['next'];
-			console.log(this.zufanglist);
-			window.console.log(res);
-		})
-	  }
+		},
+		// 页面初始化时进行的操作
+		created() {
+			this.axios({
+				url: this.server_url+'/api/zufang/test/',
+				data:{
+					transport:localStorage.transport,
+					city_name: localStorage.city_name
+				},
+				headers: {'Authorization': this.Authorization_token},
+				method: 'post',
+			}).then(res => {
+				this.zufanglist = res['data'];
+				this.zufanglistsize = res['data'].length;
+				localStorage.zufanglist = JSON.stringify(res['data']);
+				localStorage.zufanglistsize = res['data'].length;
+			})
+		}
 	}
 </script>
 

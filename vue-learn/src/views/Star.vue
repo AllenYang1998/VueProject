@@ -1,6 +1,6 @@
 <template>
 	<div id="star">
-		<h3>实习地点</h3>
+		<h3>房源收藏</h3>
 		<el-table 
 			:data="tableData">
 			<el-table-column
@@ -61,7 +61,7 @@
 			handleDelete(index, row) {
 				// console.log(index, row);
 				this.axios({
-				url: this.server_url+'/api/user/star',
+				url: this.server_url+'/api/user/star/',
 				method: 'delete',
 				data:{
 					zufang_id:row['id']

@@ -1,14 +1,8 @@
 <template>
 	<div id="test2">
-		<div class="tab-tit">
-			<a href="javascript:;" @click="msg=0" :class="{'cur':msg===0}">登陆</a> |
-			<a href="javascript:;" @click="msg=1" :class="{'cur':msg===1}">注册</a>
-		</div>
-		<!--根据msg的值显示div,如果msg等于0，第一个div显示，其它三个div不显示。
-			如果msg等于1，第二个div显示，其它三个div不显示。以此类推-->
-		<div class="tab-con">
-			<div v-show="msg===0">
-				<p>登陆</p>
+		<v-touch v-touch:swipeleft="onSwipeLeft"  v-touch:SwipeRight="onSwipeRight">
+		<el-tabs v-model="activeName" @tab-click="handleClick">
+			<el-tab-pane label="登陆" name="first">
 				<el-form ref="form" :model="form" label-width="80px">
 					<el-form-item label="账号">
 						<el-input v-model="loginForm.username"></el-input>
@@ -17,15 +11,13 @@
 						<el-input v-model="loginForm.password" type="password"></el-input>
 					</el-form-item>
 					<el-form-item>
-					    <el-button type="primary" @click="getInfo">登陆</el-button>
-						<el-button type="primary" @click="msg=1">注册</el-button>
+						<el-button type="primary" @click="getInfo">登陆</el-button>
 					</el-form-item>
 				</el-form>
 				<br />
 				{{tips}}
-			</div>
-			<div v-show="msg===1">
-				<p>注册</p>
+			</el-tab-pane>
+			<el-tab-pane label="注册" name="second">
 				<el-form ref="form" :model="form" label-width="80px">
 					<el-form-item label="账号">
 						<el-input v-model="registerForm.username"></el-input>
@@ -37,15 +29,14 @@
 						<el-input v-model="rpassword" type="password"></el-input>
 					</el-form-item>
 					<el-form-item>
-					    <el-button type="primary" @click="msg=0">登陆</el-button>
 						<el-button type="primary" @click="postInfo()">注册</el-button>
 					</el-form-item>
 				</el-form>
 				<br />
 				{{tips}}
-			</div>
-		</div>
-		
+			</el-tab-pane>
+		</el-tabs>
+		</v-touch>
 	</div>
 </template>
 
@@ -54,7 +45,7 @@
 		name:'test2',
 		data(){
 			return{
-				msg:0,
+				activeName: 'first',
 				loginForm: {
 					username: '',
 					password: '',
@@ -84,6 +75,12 @@
 			},
 		},
 		methods:{
+			onSwipeLeft(){
+				this.activeName='first'
+			},
+			onSwipeRight(){
+				this.activeName='second'
+			},
 			set(key, value, expired) {
 			    /*
 			    * set 存储方法

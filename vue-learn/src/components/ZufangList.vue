@@ -1,10 +1,12 @@
 <template>
 	<div id="ZufangList">
 		<h3>{{msg}}</h3>
+		</el-switch>
 		<el-row v-for="(zufang, index) in zufanglist">
 			<el-col>
 				<div class="grid-content bg-purple-light" @click="sendParams(zufang.id)">
-					{{ zufang.title }}|{{ zufang.area_name_1}}|{{ zufang.area_name_2}}|{{ zufang.price}}
+					{{ zufang.title }}<br>
+					{{ zufang.area_name_1}}区 | {{ zufang.area_name_2}} |  {{ zufang.price}} ￥/ 月
 				</div>
 			</el-col>
 		</el-row>
@@ -36,13 +38,17 @@
 				})
 			},
 		},
+		computed:{
+		},
 		// 页面初始化时进行的操作
 		created() {
 			this.axios({
 				url: this.server_url+'/api/zufang/test/',
 				data:{
 					transport:localStorage.transport,
-					city_name: localStorage.city_name
+					city_name: localStorage.city_name,
+					price:localStorage.price,
+					rent_method:localStorage.rent_method,
 				},
 				headers: {'Authorization': this.Authorization_token},
 				method: 'post',

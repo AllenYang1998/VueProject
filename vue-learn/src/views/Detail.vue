@@ -18,7 +18,7 @@
 		<div v-html="description"></div>
 		
 		<el-row>
-			<el-button @click="queryStr()">查询Star</el-button>
+			<el-button  @click="log">Test</el-button>
 			<el-button type="warning" icon="el-icon-star-off" circle @click="addStar()"></el-button>
 			<el-button type="danger" icon="el-icon-delete" circle @click="deleteStar()"></el-button>
 		</el-row>
@@ -42,24 +42,32 @@
 				origins:'',
 				distance:'',
 				duration:'',
-				
 				workTransportList:[],
 				zufangTransportList:[],
 				
 			}
 		},
 		methods:{
-			queryStr(){
-				this.axios({
-					url: this.server_url + '/api/user/star',
-					method: 'get',
-					params:{
-						query:'all',
-					},
-					headers: {'Authorization': this.Authorization_token}
-				}).then(res => {
-					window.console.log(res);
-				})
+			log(){
+				// window.console.log(this.workTransportList);
+				// window.console.log(this.zufangTransportList);
+				for(var i=0;i<this.zufangTransportList.length;i++){
+					for(var j=0;j<this.workTransportList.length;j++){	
+						// this.zufangTransportList[i]['address'].split(";"),this.workTransportList[j]['address'].split(";")
+						var same = this.intersect(this.zufangTransportList[i]['address'].split(";"),this.workTransportList[j]['address'].split(";"));
+						window.console.log(same)
+						if(same.length>0) {
+							window.console.log(same)
+							window.console.log(this.zufangTransportList[i]['station_name'],this.zufangTransportList[i]['transport_type'])
+							window.console.log(this.workTransportList[j]['name']);
+							// break;
+						}
+					}
+				}
+			},
+			intersect(a,b){
+			    let set1 = new Set(a),set2 = new Set(b);
+			      return [...new Set([...set1].filter( x => set2.has(x)))];
 			},
 			addStar(){
 				this.axios({
@@ -146,25 +154,9 @@
 				}
 			}).then(res => {
 				this.zufangTransportList = res['data']
-				// var TransportList = res['data']
-				// for(var i=0;i<TransportList.length;i++)
-				// {
-				// 	this.TransportList[i]['address'] = workTransport_list[i]['address'].split(";")
-				// }
-				// this.zufangTransportList = TransportList;
 			})
 			this.workTransportList = JSON.parse(localStorage.transport)['results'];
-			// var TransportList = JSON.parse(localStorage.transport)['results']
-			// for(var i=0;i<TransportList.length;i++)
-			// {
-			// 	this.TransportList[i]['address'] = workTransport_list[i]['address'].split(";")
-			// }
-			// this.workTransportList = TransportList
 		},
-		updated() {
-			window.console.log(this.zufangTransportList);
-			window.console.log(this.workTransportList);
-		}
 	}
 </script>
 

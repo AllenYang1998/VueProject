@@ -1,11 +1,5 @@
 <template>
   <div id="app">
-    <!-- <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>|
-      <router-link to="/test">Test</router-link>|
-	  <router-link to="/test2">Test2</router-link>
-    </div> -->
 	<el-menu router
 		:default-active="$route.path" 
 		class="el-menu-demo" 
@@ -50,6 +44,7 @@
 		</el-dropdown-menu>
 	</el-dropdown>
 	{{ name }} {{address_name}}
+	<br />
     <router-view/>
   </div>
 </template>
@@ -142,10 +137,16 @@
 						radius:'800',
 					})
 					.then(res => {
-						window.console.log(res)
-						
+						var transport = res;
+						for(var i=0;i<transport['results'].length;i++)
+						{
+							if(!('address' in transport['results'][i]))
+							{
+								transport['results'].splice(i,1);
+							}
+						}
 						// 请求结果序列化
-						localStorage.transport = JSON.stringify(res);
+						localStorage.transport = JSON.stringify(transport);
 						// 向后台提交实习地点数据
 						this.axios({
 						url: this.server_url+'/api/user/workaddress/',
@@ -156,7 +157,7 @@
 							position:this.position,
 							// area_name_1:val['area'];
 							// 注意res是一个对象，不知道为什么直接传到后台就变成str
-							transport:JSON.stringify(res),
+							transport:JSON.stringify(transport),
 							city_name:localStorage.city_name,
 						},
 						headers: {'Authorization': " JWT "+sessionStorage.JWT_TOKEN}
@@ -194,10 +195,6 @@
 			}
 		},
 		created() {
-			if(!localStorage.getItem("zufanglist"))
-			{
-				
-			}
 			if(this.city_list.length==0)
 			{
 				// 获得城市名
@@ -223,6 +220,15 @@
 					window.console.log(err);
 				});
 			}
+			this.axios({
+				url: this.server_url+'/api/user/require/',
+				headers: {'Authorization': this.Authorization_token},
+				method: 'get',
+			}).then(res => {
+				localStorage.price = res['data'][0]['price'];
+				localStorage.rent_method = res['data'][0]['rent_method'];
+				localStorage.transport_type = res['data'][0]['transport_type'].split(';');
+			})
 		}
 	}
 </script>

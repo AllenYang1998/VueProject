@@ -44,26 +44,27 @@
 				duration:'',
 				workTransportList:[],
 				zufangTransportList:[],
-				
+				same_result:[],
 			}
 		},
 		methods:{
 			log(){
-				// window.console.log(this.workTransportList);
-				// window.console.log(this.zufangTransportList);
 				for(var i=0;i<this.zufangTransportList.length;i++){
 					for(var j=0;j<this.workTransportList.length;j++){	
-						// this.zufangTransportList[i]['address'].split(";"),this.workTransportList[j]['address'].split(";")
 						var same = this.intersect(this.zufangTransportList[i]['address'].split(";"),this.workTransportList[j]['address'].split(";"));
-						window.console.log(same)
 						if(same.length>0) {
-							window.console.log(same)
-							window.console.log(this.zufangTransportList[i]['station_name'],this.zufangTransportList[i]['transport_type'])
-							window.console.log(this.workTransportList[j]['name']);
-							// break;
+							this.same_result[same] = new Array(); 
+							this.same_result[same]['zufang'] = this.zufangTransportList[i]['station_name'];
+							this.same_result[same]['work'] = this.workTransportList[j]['name'];
+							this.same_result[same]['type'] = this.zufangTransportList[i]['transport_type'];
+							// window.console.log(same)
+							// window.console.log(this.zufangTransportList[i]['station_name'],this.zufangTransportList[i]['transport_type'])
+							// window.console.log(this.workTransportList[j]['name']);
+							break;
 						}
 					}
 				}
+				window.console.log(this.same_result);
 			},
 			intersect(a,b){
 			    let set1 = new Set(a),set2 = new Set(b);

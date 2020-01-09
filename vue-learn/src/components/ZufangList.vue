@@ -49,7 +49,6 @@
 					city_name: localStorage.city_name,
 					price:localStorage.price,
 					rent_method:localStorage.rent_method,
-					area_name_1:localStorage.area_name_1.replace('区',''),
 				},
 				headers: {'Authorization': this.Authorization_token},
 				method: 'post',

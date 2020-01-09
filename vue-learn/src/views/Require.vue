@@ -58,7 +58,8 @@
 					headers: {'Authorization': this.Authorization_token},
 					method: 'post',
 				}).then(res => {
-					window.console.log(res)
+					// window.console.log(res)
+					location.reload();
 				})
 			},
 			resetForm(formName) {

@@ -4,7 +4,7 @@
 		<p>{{ tags }}</p>
 		<el-carousel indicator-position="outside">
 		    <el-carousel-item v-for="img in imgs">
-		      <el-image :src="img" style='height: 400px;width: 400px;'></el-image>
+				<el-image :src="img" style='height: 400px;width: 400px;'></el-image>
 		    </el-carousel-item>
 		</el-carousel>
 		<div class="left">
@@ -16,12 +16,18 @@
 			{{recommend}}
 		</div>
 		<div v-html="description"></div>
-		
 		<el-row>
-			<el-button  @click="log">Test</el-button>
+			<!-- <el-button @click="log">Test</el-button> -->
 			<el-button type="warning" icon="el-icon-star-off" circle @click="addStar()"></el-button>
 			<el-button type="danger" icon="el-icon-delete" circle @click="deleteStar()"></el-button>
 		</el-row>
+		<br />
+		<h3>
+			{{rent_contract}}
+		</h3>
+		<h3>
+			{{pay}}
+		</h3>
 	</div>
 </template>
 
@@ -45,9 +51,12 @@
 				workTransportList:[],
 				zufangTransportList:[],
 				same_result:[],
+				price:0,
+				rent_contract:'',
 			}
 		},
 		methods:{
+			// 打印同线交通
 			log(){
 				for(var i=0;i<this.zufangTransportList.length;i++){
 					for(var j=0;j<this.workTransportList.length;j++){	
@@ -57,19 +66,18 @@
 							this.same_result[same]['zufang'] = this.zufangTransportList[i]['station_name'];
 							this.same_result[same]['work'] = this.workTransportList[j]['name'];
 							this.same_result[same]['type'] = this.zufangTransportList[i]['transport_type'];
-							// window.console.log(same)
-							// window.console.log(this.zufangTransportList[i]['station_name'],this.zufangTransportList[i]['transport_type'])
-							// window.console.log(this.workTransportList[j]['name']);
 							break;
 						}
 					}
 				}
 				window.console.log(this.same_result);
 			},
+			// 求交集
 			intersect(a,b){
 			    let set1 = new Set(a),set2 = new Set(b);
 			      return [...new Set([...set1].filter( x => set2.has(x)))];
 			},
+			// 添加租房收藏
 			addStar(){
 				this.axios({
 					url: this.server_url + '/api/user/star/',
@@ -82,6 +90,7 @@
 					window.console.log('res');
 				})
 			},
+			// 取消收藏
 			deleteStar(){
 				this.axios({
 					url: this.server_url + '/api/user/star',
@@ -92,6 +101,38 @@
 					headers: {'Authorization': this.Authorization_token}
 				}).then(res => {
 					window.console.log(res);
+				})
+			},
+			// 获取租房房源信息
+			getZufangInfo(){
+				this.zufang_id = this.$route.params['id'];
+				this.axios({
+				url: this.server_url+'/api/zufang/'+this.zufang_id,
+				method: 'get'
+				}).then(res => {
+					this.title = res['data']['title'];
+					this.tags = res['data']['tags'];
+					this.imgs = res['data']['zufang_img_list'].split(",");
+					this.description = res['data']['description'];
+					this.city_name = res['data']['city_name'];
+					this.area_name_1 = res['data']['area_name_1'];
+					this.area_name_2 = res['data']['area_name_2'];
+					this.origins = res['data']['position'];
+					this.price = res['data']['price'];
+					this.rent_contract = res['data']['rent_contract'];
+				})
+			},
+			// 获取租房周边交通信息
+			getZufangTransport(){
+				// 打印房源的周边
+				this.axios({
+					url: this.server_url+'/api/zufang/transport/',
+					method: 'post',
+					data:{
+						id:this.zufang_id
+					}
+				}).then(res => {
+					this.zufangTransportList = res['data'];
 				})
 			},
 		},
@@ -127,35 +168,36 @@
 				{
 					return '建议步行';
 				}
-			}
+			},
+			pay(){
+				switch(this.rent_contract)
+				{
+				    case '押一付一':
+				        return '押金：' + this.price + '\n' + '首付：'+this.price*2 + '\n' + '月付：'+ this.price+'+房屋管理费和水电费';
+				        break;
+				    case '押一付三':
+				        return '押金：' + this.price + '\n' + '首付：'+this.price*4 + '\n' + '月付：'+ this.price+'+房屋管理费和水电费';
+				        break;
+					case '押二付一':
+					    return '押金：' + this.price*2 + '\n' + '首付：'+this.price*3 + '\n' +'月付：'+ this.price+'+房屋管理费和水电费';
+					    break;
+					case '押二付三':
+					    return '押金：' + this.price*2 + '\n' + '首付：'+this.price*5 + '\n' + '月付：'+ this.price+'+房屋管理费和水电费';
+					    break;
+					case '半年付':
+					    return '首付：' + this.price*6;
+					    break;
+					case '年付':
+					    return '首付：' + this.price*12;
+					    break;
+				    default:
+				        return '押金：面议';
+				}
+			},
 		},
 		created() {
-			// 打印工作地点的周边
-			// window.console.log(JSON.parse(localStorage.transport)['results']);
-			this.zufang_id = this.$route.params['id'];
-			this.axios({
-			url: this.server_url+'/api/zufang/'+this.zufang_id,
-			method: 'get'
-			}).then(res => {
-				this.title = res['data']['title'];
-				this.tags = res['data']['tags'];
-				this.imgs = res['data']['zufang_img_list'].split(",");
-				this.description = res['data']['description'];
-				this.city_name = res['data']['city_name'];
-				this.area_name_1 = res['data']['area_name_1'];
-				this.area_name_2 = res['data']['area_name_2'];
-				this.origins = res['data']['position'];
-			})
-			// 打印房源的周边
-			this.axios({
-				url: this.server_url+'/api/zufang/transport/',
-				method: 'post',
-				data:{
-					id:this.zufang_id
-				}
-			}).then(res => {
-				this.zufangTransportList = res['data']
-			})
+			this.getZufangInfo();
+			this.getZufangTransport();
 			this.workTransportList = JSON.parse(localStorage.transport)['results'];
 		},
 	}
@@ -163,25 +205,23 @@
 
 <style>
 	.el-carousel__item h3 {
-    color: #475669;
-    font-size: 18px;
-    opacity: 0.75;
-    line-height: 300px;
-    margin: 0;
-  }
-  
-  .el-carousel__item:nth-child(2n) {
-    background-color: #99a9bf;
-  }
-  
-  .el-carousel__item:nth-child(2n+1) {
-    background-color: #d3dce6;
-  }
-  .mb15{
-	  float:left;
-	  margin-top: 1.5px;
-  }
-  .left{
-	  /* float:left; */
-  }
+		color: #475669;
+		font-size: 18px;
+		opacity: 0.75;
+		line-height: 300px;
+		margin: 0;
+	}
+	.el-carousel__item:nth-child(2n) {
+		background-color: #99a9bf;
+	}
+	.el-carousel__item:nth-child(2n+1) {
+		background-color: #d3dce6;
+	}
+	.mb15{
+		float:left;
+		margin-top: 1.5px;
+	}
+	.left{
+		/* float:left; */
+	}
 </style>

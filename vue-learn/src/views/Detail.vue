@@ -1,6 +1,7 @@
 <template>
 	<div id="detail">
 		<h3>{{ title }}</h3>
+		<a :href="link">原地址</a>
 		<p>{{ tags }}</p>
 		<el-carousel indicator-position="outside">
 		    <el-carousel-item v-for="img in imgs">
@@ -15,19 +16,14 @@
 		<div class="left">
 			{{recommend}}
 		</div>
+		<h3>
+			{{rent_contract}}|{{pay}}
+		</h3>	
 		<div v-html="description"></div>
 		<el-row>
-			<!-- <el-button @click="log">Test</el-button> -->
 			<el-button type="warning" icon="el-icon-star-off" circle @click="addStar()"></el-button>
 			<el-button type="danger" icon="el-icon-delete" circle @click="deleteStar()"></el-button>
 		</el-row>
-		<br />
-		<h3>
-			{{rent_contract}}
-		</h3>
-		<h3>
-			{{pay}}
-		</h3>
 	</div>
 </template>
 
@@ -38,6 +34,7 @@
 			return{
 				zufang_id:'',
 				title:'',
+				link:'',
 				tags:{},
 				imgs:[],
 				description:'',
@@ -111,6 +108,7 @@
 				method: 'get'
 				}).then(res => {
 					this.title = res['data']['title'];
+					this.link = res['data']['link'];
 					this.tags = res['data']['tags'];
 					this.imgs = res['data']['zufang_img_list'].split(",");
 					this.description = res['data']['description'];
@@ -123,7 +121,7 @@
 				})
 			},
 			// 获取租房周边交通信息
-			getZufangTransport(){
+			getTransport(){
 				// 打印房源的周边
 				this.axios({
 					url: this.server_url+'/api/zufang/transport/',
@@ -133,6 +131,22 @@
 					}
 				}).then(res => {
 					this.zufangTransportList = res['data'];
+					window.console.log(res['data']);
+					var workTransportList = JSON.parse(localStorage.transport)['results'];
+					window.console.log(workTransportList);
+					for(var i=0;i<res['data'].length;i++){
+						for(var j=0;j<workTransportList.length;j++){	
+							var same = this.intersect(res['data'][i]['address'].split(";"),workTransportList[j]['address'].split(";"));
+							if(same.length>0) {
+								this.same_result[same] = new Array(); 
+								this.same_result[same]['zufang'] = res['data'][i]['station_name'];
+								this.same_result[same]['work'] = workTransportList[j]['name'];
+								this.same_result[same]['type'] = res['data'][i]['transport_type'];
+								break;
+							}
+						}
+					}
+					window.console.log(this.same_result);
 				})
 			},
 		},
@@ -158,6 +172,7 @@
 				// 先模拟用户
 				if(this.distance>=4000)
 				{
+					this.getTransport();
 					return '建议乘坐公交/地铁上班';
 				}
 				else if(this.duration<=15*60)
@@ -173,16 +188,16 @@
 				switch(this.rent_contract)
 				{
 				    case '押一付一':
-				        return '押金：' + this.price + '\n' + '首付：'+this.price*2 + '\n' + '月付：'+ this.price+'+房屋管理费和水电费';
+				        return '押金：' + this.price + '|' + '首付：'+this.price*2 + '|' + '月付：'+ this.price+'+房屋管理费和水电费';
 				        break;
 				    case '押一付三':
-				        return '押金：' + this.price + '\n' + '首付：'+this.price*4 + '\n' + '月付：'+ this.price+'+房屋管理费和水电费';
+				        return '押金：' + this.price + '|' + '首付：'+this.price*4 + '|' + '月付：'+ this.price+'+房屋管理费和水电费';
 				        break;
 					case '押二付一':
-					    return '押金：' + this.price*2 + '\n' + '首付：'+this.price*3 + '\n' +'月付：'+ this.price+'+房屋管理费和水电费';
+					    return '押金：' + this.price*2 + '|' + '首付：'+this.price*3 + '|' +'月付：'+ this.price+'+房屋管理费和水电费';
 					    break;
 					case '押二付三':
-					    return '押金：' + this.price*2 + '\n' + '首付：'+this.price*5 + '\n' + '月付：'+ this.price+'+房屋管理费和水电费';
+					    return '押金：' + this.price*2 + '|' + '首付：'+this.price*5 + '|' + '月付：'+ this.price+'+房屋管理费和水电费';
 					    break;
 					case '半年付':
 					    return '首付：' + this.price*6;
@@ -197,8 +212,6 @@
 		},
 		created() {
 			this.getZufangInfo();
-			this.getZufangTransport();
-			this.workTransportList = JSON.parse(localStorage.transport)['results'];
 		},
 	}
 </script>

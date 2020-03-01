@@ -1,24 +1,40 @@
 <template>
   <div id="app">
-	<el-menu router
-		:default-active="$route.path" 
-		class="el-menu-demo" 
-		mode="horizontal"
-		background-color="#303133"
-		text-color="#fff"
-		active-text-color="#ffd04b"
-		theme="dark">  
-	<el-menu-item index="/">主页</el-menu-item>
-	<el-menu-item index="/test">列表</el-menu-item>
-	<el-menu-item index="/test2" v-show="!is_login">注册登录</el-menu-item>
-	<el-submenu  v-show="is_login" index>
-		<template slot="title">{{username}}</template>
-		<el-menu-item index="/require">租房需求</el-menu-item>
-		<el-menu-item index="/work">实习地点</el-menu-item>
-		<el-menu-item index="/star">房源收藏</el-menu-item>
-		<el-menu-item v-on:click="logout" index="/test2">退出</el-menu-item>
-	</el-submenu>
-	</el-menu>
+	<el-container>
+		<el-header>
+			<el-menu router
+				:default-active="$route.path" 
+				class="el-menu-demo" 
+				mode="horizontal"
+				background-color="#303133"
+				text-color="#fff"
+				active-text-color="#ffd04b"
+				theme="dark">  
+				<el-submenu>
+					<template slot="title">{{city_name}}</template>
+					<el-menu-item v-for="item in city_list" :value="item.city_name" v-on:click="changeCity(item.city_name)">{{item.city_name}}</el-menu-item>
+				</el-submenu>
+				<el-menu-item index="/">主页</el-menu-item>
+				<el-menu-item index="/test">租房推荐</el-menu-item>
+				<el-menu-item index="/test2" v-show="!is_login">注册登录</el-menu-item>
+				<el-submenu  v-show="is_login" index>
+					<template slot="title">{{username}}</template>
+					<!-- <el-menu-item index="/require">租房需求</el-menu-item> -->
+					<el-menu-item index="/work">个人信息管理</el-menu-item>
+					<!-- <el-menu-item index="/star">房源收藏</el-menu-item> -->
+					<el-menu-item v-on:click="logout" index="/test2">退出</el-menu-item>
+				</el-submenu>
+			</el-menu>
+		</el-header>
+		<el-main>
+			<router-view/>
+		</el-main>
+		<el-footer>Footer</el-footer>
+	</el-container>
+	<!--
+		2020年2月28日 工作地点输入表达最好放在个人信息管理
+	-->
+	<!--
 	<div style="margin-top: 15px;">
 	  <el-input placeholder="请输入内容" v-model="search" class="input-with-select">
 	    <el-select v-model="city_name" slot="prepend" placeholder="请选择">
@@ -45,7 +61,9 @@
 	</el-dropdown>
 	{{ name }} {{address_name}}
 	<br />
-    <router-view/>
+	-->
+    
+	
   </div>
 </template>
 
@@ -57,11 +75,9 @@
 				username:sessionStorage.username,
 				name:localStorage.name,
 				city_name:localStorage.city_name,
-				search:'',
-				name: localStorage.name,
 				address_name:localStorage.address_name,
 				position:localStorage.position, //工作地点坐标
-				search_workaddress:[],
+				// search_workaddress:[],
 				text_transport:[],
 				is_name:false,
 				user_workaddress:[],
@@ -79,6 +95,10 @@
 			}
 		},
 		methods:{
+			//切换城市、
+			changeCity(val){
+				this.city_name = val;
+			},
 			logout(event){
 				this.username='';
 				sessionStorage.removeItem('username');
@@ -195,18 +215,15 @@
 			}
 		},
 		created() {
-			if(this.city_list.length==0)
-			{
-				// 获得城市名
-				this.axios({
-				url: this.server_url+'/api/zufang/city/',
-				method: 'get',
-				}).then(res => {
-					this.city_list = res['data'];
-				}).catch(err => {
-					window.console.log(err);
-				})
-			}
+			// 获得城市名
+			this.axios({
+			url: this.server_url+'/api/zufang/city/',
+			method: 'get',
+			}).then(res => {
+				this.city_list = res['data'];
+			}).catch(err => {
+				window.console.log(err);
+			})
 			if(this.user_workaddress.length==0)
 			{
 				// 用户工作地点

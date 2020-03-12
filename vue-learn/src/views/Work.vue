@@ -1,16 +1,20 @@
+<!--
+2020年3月3日
+删除直接删去图标即可，不要刷新
+-->
 <template>
 	<div id="work">
 		<h3>用户个人信息管理</h3>
 		<el-collapse>
 		  <el-collapse-item title="实习地点管理" name="1">
-			<div style="margin-top: 15px;">
-			  <el-input placeholder="添加实习地点" v-model="search" class="input-with-select">
-			    <el-select v-model="city_name" slot="prepend" placeholder="请选择">
+			<!--工作搜索表单-->
+			<el-input placeholder="添加实习地点" v-model="search" class="input-with-select">
+				<el-select v-model="city_name" slot="prepend" placeholder="请选择">
 					<el-option v-for="item in city_list" :label="item.city_name" :value="item.city_name"></el-option>
-			    </el-select>
-			    <el-button slot="append" icon="el-icon-search" @click="getWorkAddressList()"></el-button>
-			  </el-input>
-			</div>
+				</el-select>
+				<el-button slot="append" icon="el-icon-search" @click="getWorkAddressList()"></el-button>
+			</el-input>
+			<!-- 工作选择对话框 -->
 			<el-dialog title="选择实习地点" :visible.sync="dialogVisible">
 			  <el-table :data="search_workaddress">
 				  <el-table-column label="操作">
@@ -27,22 +31,19 @@
 				<el-table-column property="area" label="地区"></el-table-column>
 			  </el-table>
 			</el-dialog>
+			<!-- 个人工作管理表格 -->
+			
 			<el-table
-				:data="workTableData">
-				<el-table-column prop="name" label="公司" width="300"></el-table-column>
-				<el-table-column prop="address" label="地址" width="500"></el-table-column>
-				<el-table-column prop="city_name" label="城市" width="300"></el-table-column>
-				<el-table-column prop="area_name_1" label="地区" ></el-table-column>
-				<el-table-column label="操作">
+				:data="workTableData"
+				style="width: 100%">
+				<el-table-column prop="name" label="公司" width="180"></el-table-column>
+				<el-table-column prop="address" label="地址" width="180"></el-table-column>
+				<el-table-column prop="city_name" label="城市" width="180"></el-table-column>
+				<el-table-column prop="area_name_1" label="地区" width="180"></el-table-column>
+				<el-table-column label="操作" width="180">
 					<template slot-scope="scope">
-						<el-button
-						size="mini"
-						type="danger"
-						@click="setWorkAddress(scope.$index, scope.row)">设为工作地点</el-button>
-						<el-button
-						size="mini"
-						type="danger"
-						@click="handleDelete(scope.$index, scope.row)">删除</el-button>
+						<el-button size="mini" type="danger" @click="setWorkAddress(scope.$index, scope.row)">设为地点</el-button>
+						<el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -50,21 +51,16 @@
 		  
 		  <el-collapse-item title="租房收藏管理" name="2">
 		    <el-table
-		    	:data="StarTableData">
-		    	<el-table-column prop="title" label="标题" width="300"></el-table-column>
-		    	<el-table-column prop="price" label="月租" width="300"></el-table-column>
-		    	<el-table-column prop="area_name_1" label="区域" width="300"></el-table-column>
-		    	<el-table-column prop="area_name_2" label="村" width="300"></el-table-column>
-		    	<el-table-column label="操作">
+		    	:data="starTableData"
+				style="width: 100%">
+		    	<el-table-column prop="title" label="标题" width="180"></el-table-column>
+		    	<el-table-column prop="price" label="月租" width="180"></el-table-column>
+		    	<el-table-column prop="area_name_1" label="区域" width="180"></el-table-column>
+		    	<el-table-column prop="area_name_2" label="村" width="180"></el-table-column>
+		    	<el-table-column label="操作" width="180">
 		    		<template slot-scope="scope2">
-		    			<el-button
-		    			size="mini"
-		    			type="danger"
-		    			@click="sendParams(scope2.$index, scope2.row)">查看</el-button>
-		    			<el-button
-		    			size="mini"
-		    			type="danger"
-		    			@click="handleDelete1(scope2.$index, scope2.row)">取消收藏</el-button>
+		    			<el-button size="mini" type="danger" @click="sendParams(scope2.$index, scope2.row)">查看</el-button>
+		    			<el-button size="mini" type="danger" @click="handleDelete1(scope2.$index, scope2.row)">取消收藏</el-button>
 		    		</template>
 		    	</el-table-column>
 		    </el-table>
@@ -115,7 +111,6 @@
 				area_name_1:localStorage.area_name_1,
 				position:localStorage.position, //工作地点坐标
 				bustransport:{},
-				subwaytransport:{},
 				
 				city_name:localStorage.city_name,
 				city_list:[],
@@ -123,7 +118,9 @@
 				dialogVisible: false,
 				search_workaddress:[],
 				position:localStorage.position,
+				
 				workTableData:{},
+				starTableData:{},
 				
 				// 租房需求数据
 				ruleForm: {
@@ -205,13 +202,14 @@
 					// 弹出工作地点选择对话框
 					this.dialogVisible = true;
 					this.search_workaddress = res['results'];
+					window.console.log(res);
 				}).catch(err => {
 					window.console.log(err)
 				})
 			},
 			// 获取工作地点附近交通信息
 			getWorkAdrress(index, row){
-				// window.console.log(row);
+				
 				// 获取工作地点附件的站
 				this.name = row['name'];
 				this.position = row['location']['lat']+','+row['location']['lng'];
@@ -251,9 +249,9 @@
 					radius:'800',
 				})
 				.then(res => {
-					this.subwaytransport = res;
+					// this.subwaytransport = res;
 					// 公交车+地铁交通信息
-					this.bustransport['results'] = this.subwaytransport['results'].concat(this.bustransport['results']);
+					this.bustransport['results'] = this.bustransport['results'].concat(res['results']);
 					window.console.log(this.bustransport);
 					this.axios({
 					url: this.server_url+'/api/user/workaddress/',
@@ -326,9 +324,7 @@
 				// 	res['data'][i]['transport'] = eval(res['data'][i]['transport']);
 				// }
 				// this.workaddresslist = res['data'];
-				window.console.log(res['data']);
 				this.workTableData=res['data'];
-				window.console.log(res);
 			}).catch(err => {
 				window.console.log(err);
 			});
@@ -343,8 +339,7 @@
 				// 	res['data'][i]['transport'] = eval(res['data'][i]['transport']);
 				// }
 				// this.workaddresslist = res['data'];
-				this.StarTableData=res['data'];
-				window.console.log(res);
+				this.starTableData=res['data'];
 			}).catch(err => {
 				window.console.log(err);
 			});
@@ -363,25 +358,4 @@
 	}
 </script>
 
-<style>
-	.text {
-		font-size: 14px;
-	}
 
-	.item {
-		margin-bottom: 18px;
-	}
-
-	.clearfix:before,
-	.clearfix:after {
-		display: table;
-		content: "";
-	}
-	.clearfix:after {
-		clear: both
-	}
-
-	.box-card {
-		width: 480px;
-	}
-</style>

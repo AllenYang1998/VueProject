@@ -1,29 +1,42 @@
 <template>
 	<div id="detail">
-		<h3>{{ title }}</h3>
-		<a :href="link">原地址</a>
-		<p>{{ tags }}</p>
-		<el-carousel indicator-position="outside">
-		    <el-carousel-item v-for="img in imgs">
-				<el-image :src="img" style='height: 400px;width: 400px;'></el-image>
-		    </el-carousel-item>
-		</el-carousel>
-		<div class="left">
-			<font>{{city_name}}</font>-
-			<font>{{area_name_1}}</font>-
-			<font>{{area_name_2}}</font>
+		<h1><a :href="zufang.link" style="text-decoration:none;font-size: 30px;">{{ zufang.title }}</a></h1>
+		<h3 style="color: red;"><strong>{{zufang.rent_method}}</strong> {{rent_contract}}|{{pay}}</h3>	
+		<el-tag v-for="tag in tags">{{ tag }}</el-tag><br /><br />
+		<div align="center">
+			<el-carousel indicator-position="outside" height=" 450px" style='width: 600px;'>
+			    <el-carousel-item v-for="img in imgs" >
+					<el-image :src="img" style='height: 450px;width: 600px;'></el-image>
+			    </el-carousel-item>
+			</el-carousel>
 		</div>
+		
 		<div class="left">
+			<font>{{zufang.city_name}}</font>-
+			<font>{{zufang.area_name_1}}</font>-
+			<font>{{zufang.area_name_2}}</font>
+		</div>
+		<br />
+		
+		
+		<div>
 			{{recommend}}
 		</div>
-		<h3>
-			{{rent_contract}}|{{pay}}
-		</h3>	
-		<div v-html="description"></div>
-		<el-row>
-			<el-button type="warning" icon="el-icon-star-off" circle @click="addStar()"></el-button>
-			<el-button type="danger" icon="el-icon-delete" circle @click="deleteStar()"></el-button>
-		</el-row>
+		<div v-for="(same,index) in same_result" >
+			{{same[0]}}|{{same[1]}}|{{same[2]}}|{{same[3]}}
+		</div>		
+		
+		
+		<p class="mb15"><strong>房屋结构：</strong>{{zufang.structure}}</p> 
+		<p class="mb15"><strong>室内面积：</strong>{{zufang.area}}</p>
+		<p class="mb15"><strong>装修情况：</strong>{{zufang.decoration}}</p> 
+		<p class="mb15"><strong>房屋配套：</strong>{{zufang.matching}}</p>
+		
+		<div v-html="zufang.description" style="width: 100%;"></div>
+		<!--
+		<el-button type="warning" icon="el-icon-star-off" circle @click="addStar()"></el-button>
+		<el-button type="danger" icon="el-icon-delete" circle @click="deleteStar()"></el-button>
+		-->
 	</div>
 </template>
 
@@ -32,16 +45,11 @@
 		name:'detail',
 		data(){
 			return{
+				zufang:{},	
 				zufang_id:'',
-				title:'',
-				link:'',
-				tags:{},
 				imgs:[],
 				description:'',
 				address:'',
-				city_name:'',
-				area_name_1:'',
-				area_name_2:'',
 				origins:'',
 				distance:'',
 				duration:'',
@@ -107,9 +115,10 @@
 				url: this.server_url+'/api/zufang/'+this.zufang_id,
 				method: 'get'
 				}).then(res => {
+					this.zufang = res['data'];
 					this.title = res['data']['title'];
 					this.link = res['data']['link'];
-					this.tags = res['data']['tags'];
+					this.tags = res['data']['tags'].split(" ");
 					this.imgs = res['data']['zufang_img_list'].split(",");
 					this.description = res['data']['description'];
 					this.city_name = res['data']['city_name'];
@@ -130,6 +139,7 @@
 						id:this.zufang_id
 					}
 				}).then(res => {
+					var same_result = [];
 					this.zufangTransportList = res['data'];
 					window.console.log(res['data']);
 					var workTransportList = JSON.parse(localStorage.transport)['results'];
@@ -138,15 +148,16 @@
 						for(var j=0;j<workTransportList.length;j++){	
 							var same = this.intersect(res['data'][i]['address'].split(";"),workTransportList[j]['address'].split(";"));
 							if(same.length>0) {
-								this.same_result[same] = new Array(); 
-								this.same_result[same]['zufang'] = res['data'][i]['station_name'];
-								this.same_result[same]['work'] = workTransportList[j]['name'];
-								this.same_result[same]['type'] = res['data'][i]['transport_type'];
+								same_result.push([same[0],res['data'][i]['station_name'],workTransportList[j]['name'],res['data'][i]['transport_type']]); 
+								// same_result[same]['zufang'] = res['data'][i]['station_name'];
+								// same_result[same]['work'] = workTransportList[j]['name'];
+								// same_result[same]['type'] = res['data'][i]['transport_type'];
 								break;
 							}
 						}
 					}
-					window.console.log(this.same_result);
+					window.console.log(same_result);
+					this.same_result = same_result;
 				})
 			},
 		},
@@ -212,6 +223,7 @@
 		},
 		created() {
 			this.getZufangInfo();
+			this.getTransport();
 		},
 	}
 </script>

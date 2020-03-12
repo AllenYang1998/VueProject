@@ -1,6 +1,6 @@
 <template>
 	<div id="test">
-		<h3>动态匹配房源</h3>
+		<h3 style="font-size: 56px;">动态匹配房源</h3>
 		<ZufangList msg="Hello,这是一个房源列表"/>
 	</div>
 </template>

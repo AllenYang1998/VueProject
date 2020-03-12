@@ -1,14 +1,22 @@
 <template>
 	<div id="ZufangList">
-		<h3>{{msg}}</h3>
-		</el-switch>
-		<el-row v-for="(zufang, index) in zufanglist">
-			<el-col>
-				<div class="grid-content bg-purple-light" @click="sendParams(zufang.id)">
-					{{ zufang.title }}<br>
-					{{ zufang.area_name_1}}区 | {{ zufang.area_name_2}} |  {{ zufang.price}} ￥/ 月
-				</div>
-			</el-col>
+		<!-- <h3>{{msg}}</h3> -->
+		<el-row :gutter="0" v-for="(zufang, index) in zufanglist">
+			<div @click="sendParams(zufang.id)"> 
+				  <el-divider></el-divider>
+				<el-col :span="8">
+				  <div class="grid-content ">
+					  <el-image :src="zufang.img" :fit="fit"></el-image>
+				  </div>
+				</el-col>
+				<el-col :span="16">
+					<div class="grid-content ">
+						<p style="font-size: 36px;">{{ zufang.title }}</p>
+						<p style="font-size: 28px;">{{ zufang.area_name_1}}区 | {{ zufang.area_name_2}}</p>
+						<p style="font-size: 32px;color: red;">{{ zufang.price}} ￥/ 月</p>
+					</div>
+				</el-col>
+			</div>
 		</el-row>
 	</div>
 </template>
@@ -53,6 +61,7 @@
 				headers: {'Authorization': this.Authorization_token},
 				method: 'post',
 			}).then(res => {
+				window.console.log(res['data'])
 				this.zufanglist = res['data'];
 				this.zufanglistsize = res['data'].length;
 				localStorage.zufanglist = JSON.stringify(res['data']);

@@ -10,14 +10,14 @@
 				text-color="#fff"
 				active-text-color="#ffd04b"
 				theme="dark">  
-				<el-submenu>
+				<el-submenu index='city_name'>
 					<template slot="title">{{city_name}}</template>
 					<el-menu-item v-for="item in city_list" :value="item.city_name" v-on:click="changeCity(item.city_name)">{{item.city_name}}</el-menu-item>
 				</el-submenu>
 				<el-menu-item index="/">主页</el-menu-item>
 				<el-menu-item index="/test">租房推荐</el-menu-item>
 				<el-menu-item index="/test2" v-show="!is_login">注册登录</el-menu-item>
-				<el-submenu  v-show="is_login" index>
+				<el-submenu  v-show="is_login" index='user'>
 					<template slot="title">{{username}}</template>
 					<!-- <el-menu-item index="/require">租房需求</el-menu-item> -->
 					<el-menu-item index="/work">个人信息管理</el-menu-item>
@@ -27,9 +27,13 @@
 			</el-menu>
 		</el-header>
 		<el-main>
-			<router-view/>
+			<div class="padding">
+				<router-view/>
+			</div>
 		</el-main>
-		<el-footer>Footer</el-footer>
+		<el-footer>
+			Copyright © 杨铠安, 2020.
+		</el-footer>
 	</el-container>
 	<!--
 		2020年2月28日 工作地点输入表达最好放在个人信息管理
@@ -270,4 +274,19 @@
     }
   }
 }
+div.padding
+{
+	// padding-top:25px;
+	// padding-bottom:25px;
+	padding-right:20%;
+	padding-left:20%;
+}
+el-footer
+{
+	width: 100%;
+	position: absolute;
+	bottom: 0;
+	// margin-top: -100px;
+}
+	
 </style>

@@ -1,18 +1,22 @@
 <template>
 	<div id="test">
-		<h3 style="font-size: 56px;">动态匹配房源</h3>
-		<ZufangList msg="Hello,这是一个房源列表"/>
+		<h3 style="font-size: 56px;">房源匹配</h3>
+		<!-- <MatchZufangList msg="Hello,这是一个房源列表"/> -->
+		<h3 style="font-size: 56px;">附近房源</h3>
+		<NearZufangList msg="Hello,这是一个房源列表"/>
 	</div>
 </template>
 
 <script>
 // @ is an alias to /src
 // import ZufangList from '@/src/components/ZufangList.vue'
-import ZufangList from '../components/ZufangList.vue'
+import MatchZufangList from '../components/MatchZufangList.vue'
+import NearZufangList from '../components/NearZufangList.vue'
 	export default{
 		name:'test',
 		components: {
-		  ZufangList
+		  MatchZufangList,
+		  NearZufangList,
 		},
 		data(){
 			return{

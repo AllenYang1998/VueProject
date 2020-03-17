@@ -1,7 +1,7 @@
 <template>
 	<div id="ZufangList">
 		<!-- <h3>{{msg}}</h3> -->
-		<el-row :gutter="0" v-for="(zufang, index) in zufanglist">
+		<el-row :gutter="0" v-for="(zufang, index) in nearzufanglist">
 			<div @click="sendParams(zufang.id)"> 
 				  <el-divider></el-divider>
 				<el-col :span="8">
@@ -13,7 +13,7 @@
 					<div class="grid-content ">
 						<p style="font-size: 36px;">{{ zufang.title }}</p>
 						<p style="font-size: 28px;">{{ zufang.area_name_1}}区 | {{ zufang.area_name_2}}</p>
-						<p style="font-size: 32px;color: red;">{{ zufang.price}} ￥/ 月</p>
+						<p style="font-size: 32px;color: red;">{{ zufang.rent_method}}|{{ zufang.price}} ￥/ 月</p>
 					</div>
 				</el-col>
 			</div>
@@ -23,15 +23,15 @@
 
 <script>
 	export default {
-		name: 'ZufangList',
+		name: 'NearZufangList',
 		// 接收父组件的传过来的数据，组件类似与函数，props就是形参数
 		props: {
 			msg:String,
 		},
 		data(){
 			return{
-				zufanglist:[],
-				zufanglistsize:0,
+				nearzufanglist:[],
+				//zufanglistsize:0,
 			}
 		},
 		methods:{
@@ -51,21 +51,17 @@
 		// 页面初始化时进行的操作
 		created() {
 			this.axios({
-				url: this.server_url+'/api/zufang/test/',
+				url: this.server_url+'/api/zufang/near/',
 				data:{
-					transport:localStorage.transport,
-					city_name: localStorage.city_name,
+					workaddress:localStorage.workaddress,
 					price:localStorage.price,
 					rent_method:localStorage.rent_method,
 				},
 				headers: {'Authorization': this.Authorization_token},
 				method: 'post',
 			}).then(res => {
-				window.console.log(res['data'])
-				this.zufanglist = res['data'];
-				this.zufanglistsize = res['data'].length;
-				localStorage.zufanglist = JSON.stringify(res['data']);
-				localStorage.zufanglistsize = res['data'].length;
+				window.console.log(res)
+				this.nearzufanglist = res['data'];
 			})
 		}
 	}

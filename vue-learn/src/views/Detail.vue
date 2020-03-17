@@ -33,10 +33,9 @@
 		<p class="mb15"><strong>房屋配套：</strong>{{zufang.matching}}</p>
 		
 		<div v-html="zufang.description" style="width: 100%;"></div>
-		<!--
-		<el-button type="warning" icon="el-icon-star-off" circle @click="addStar()"></el-button>
-		<el-button type="danger" icon="el-icon-delete" circle @click="deleteStar()"></el-button>
-		-->
+		
+		<el-button v-show="!is_star" type="warning" icon="el-icon-star-off" circle @click="addStar()"></el-button>
+		<el-button v-show="is_star" type="danger" icon="el-icon-delete" circle @click="deleteStar()"></el-button>
 	</div>
 </template>
 
@@ -58,6 +57,7 @@
 				same_result:[],
 				price:0,
 				rent_contract:'',
+				is_star:0,
 			}
 		},
 		methods:{
@@ -82,6 +82,22 @@
 			    let set1 = new Set(a),set2 = new Set(b);
 			      return [...new Set([...set1].filter( x => set2.has(x)))];
 			},
+			isStar(){
+				this.zufang_id = this.$route.params['id'];
+				this.axios({
+					url: this.server_url+'/api/user/isstar/',
+					method: 'post',
+					data:{
+						zufang_id: this.zufang_id
+					},
+					headers: {'Authorization': this.Authorization_token}
+				}).then(res => {
+					window.console.log(res)
+					if(res['status']==200){
+						this.is_star = 1;
+					}
+				})
+			},
 			// 添加租房收藏
 			addStar(){
 				this.axios({
@@ -93,6 +109,7 @@
 					headers: {'Authorization': this.Authorization_token}
 				}).then(res => {
 					window.console.log('res');
+					this.is_star = 1;
 				})
 			},
 			// 取消收藏
@@ -106,6 +123,7 @@
 					headers: {'Authorization': this.Authorization_token}
 				}).then(res => {
 					window.console.log(res);
+					this.is_star = 0;
 				})
 			},
 			// 获取租房房源信息
@@ -224,6 +242,7 @@
 		created() {
 			this.getZufangInfo();
 			this.getTransport();
+			this.isStar();
 		},
 	}
 </script>

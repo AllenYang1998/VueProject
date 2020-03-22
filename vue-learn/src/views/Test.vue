@@ -1,9 +1,13 @@
 <template>
 	<div id="test">
-		<h3 style="font-size: 56px;">房源匹配</h3>
-		<!-- <MatchZufangList msg="Hello,这是一个房源列表"/> -->
-		<h3 style="font-size: 56px;">附近房源</h3>
-		<NearZufangList msg="Hello,这是一个房源列表"/>
+		<el-tabs v-model="activeName" @tab-click="handleClick">
+			<el-tab-pane label="房源匹配" name="first">
+				<MatchZufangList msg="Hello,这是一个房源列表"/>
+			</el-tab-pane>
+			<el-tab-pane label="附近房源" name="second">
+				<NearZufangList msg="Hello,这是一个房源列表"/>
+			</el-tab-pane>
+		</el-tabs>
 	</div>
 </template>
 
@@ -20,6 +24,7 @@ import NearZufangList from '../components/NearZufangList.vue'
 		},
 		data(){
 			return{
+				activeName: 'first',
 				msg:'Hello this is a test page!',
 				number:1,
 				type:"news",

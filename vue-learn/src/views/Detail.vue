@@ -11,29 +11,25 @@
 			</el-carousel>
 		</div>
 		
-		<div class="left">
+		<p>
 			<font>{{zufang.city_name}}</font>-
 			<font>{{zufang.area_name_1}}</font>-
 			<font>{{zufang.area_name_2}}</font>
-		</div>
+		</p>
 		<br />
 		
-		
-		<div>
-			{{recommend}}
-		</div>
-		<div v-for="(same,index) in same_result" >
+		<p class="mb15">
+			<strong>距离公司：</strong>{{ distance_text }} {{recommend}}
+		</p>
+		<!-- <div v-for="(same,index) in same_result" >
 			{{same[0]}}|{{same[1]}}|{{same[2]}}|{{same[3]}}
-		</div>		
-		
-		
+		</div> -->		
 		<p class="mb15"><strong>房屋结构：</strong>{{zufang.structure}}</p> 
 		<p class="mb15"><strong>室内面积：</strong>{{zufang.area}}</p>
 		<p class="mb15"><strong>装修情况：</strong>{{zufang.decoration}}</p> 
 		<p class="mb15"><strong>房屋配套：</strong>{{zufang.matching}}</p>
 		
-		<div v-html="zufang.description" style="width: 100%;"></div>
-		
+		<div v-html="zufang.description"></div>
 		<el-button v-show="!is_star" type="warning" icon="el-icon-star-off" circle @click="addStar()"></el-button>
 		<el-button v-show="is_star" type="danger" icon="el-icon-delete" circle @click="deleteStar()"></el-button>
 	</div>
@@ -52,12 +48,15 @@
 				origins:'',
 				distance:'',
 				duration:'',
+				distance_text:'',
+				duration_text:'',
 				workTransportList:[],
 				zufangTransportList:[],
 				same_result:[],
 				price:0,
 				rent_contract:'',
 				is_star:0,
+				tags:[],
 			}
 		},
 		methods:{
@@ -75,7 +74,7 @@
 						}
 					}
 				}
-				window.console.log(this.same_result);
+				// window.console.log(this.same_result);
 			},
 			// 求交集
 			intersect(a,b){
@@ -92,7 +91,7 @@
 					},
 					headers: {'Authorization': this.Authorization_token}
 				}).then(res => {
-					window.console.log(res)
+					// window.console.log(res)
 					if(res['status']==200){
 						this.is_star = 1;
 					}
@@ -159,22 +158,19 @@
 				}).then(res => {
 					var same_result = [];
 					this.zufangTransportList = res['data'];
-					window.console.log(res['data']);
+					// window.console.log(res['data']);
 					var workTransportList = JSON.parse(localStorage.transport)['results'];
-					window.console.log(workTransportList);
+					// window.console.log(workTransportList);
 					for(var i=0;i<res['data'].length;i++){
 						for(var j=0;j<workTransportList.length;j++){	
 							var same = this.intersect(res['data'][i]['address'].split(";"),workTransportList[j]['address'].split(";"));
 							if(same.length>0) {
 								same_result.push([same[0],res['data'][i]['station_name'],workTransportList[j]['name'],res['data'][i]['transport_type']]); 
-								// same_result[same]['zufang'] = res['data'][i]['station_name'];
-								// same_result[same]['work'] = workTransportList[j]['name'];
-								// same_result[same]['type'] = res['data'][i]['transport_type'];
 								break;
 							}
 						}
 					}
-					window.console.log(same_result);
+					// window.console.log(same_result);
 					this.same_result = same_result;
 				})
 			},
@@ -190,18 +186,21 @@
 						destinations: localStorage.position,
 					})
 					.then(res => {
+						window.console.log(res);
 						// 距离
 						this.distance = res['result'][0]['distance']['value'];
+						this.distance_text = res['result'][0]['distance']['text'];
 						// 用时
 						this.duration = res['result'][0]['duration']['value'];
+						this.duration_text = res['result'][0]['duration']['text'];
 					}).catch(err => {
-						window.console.log(err);
+						window.console.log('百度地图距离计算API请求失败');
 					})
 				}
+				this.getTransport();
 				// 先模拟用户
 				if(this.distance>=4000)
 				{
-					this.getTransport();
 					return '建议乘坐公交/地铁上班';
 				}
 				else if(this.duration<=15*60)
@@ -264,8 +263,9 @@
 	.mb15{
 		float:left;
 		margin-top: 1.5px;
+		/* width: 90%; */
 	}
 	.left{
-		/* float:left; */
+		float:left;
 	}
 </style>

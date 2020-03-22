@@ -10,12 +10,12 @@
 				text-color="#fff"
 				active-text-color="#ffd04b"
 				theme="dark">  
-				<el-submenu index='city_name'>
+				<el-submenu index='/city_name'>
 					<template slot="title">{{city_name}}</template>
 					<el-menu-item v-for="item in city_list" :value="item.city_name" v-on:click="changeCity(item.city_name)">{{item.city_name}}</el-menu-item>
 				</el-submenu>
 				<el-menu-item index="/">主页</el-menu-item>
-				<el-menu-item index="/test">租房推荐</el-menu-item>
+				<el-menu-item index="/test" v-show="is_login">租房推荐</el-menu-item>
 				<el-menu-item index="/test2" v-show="!is_login">注册登录</el-menu-item>
 				<el-submenu  v-show="is_login" index='user'>
 					<template slot="title">{{username}}</template>
@@ -23,6 +23,11 @@
 					<el-menu-item index="/work">个人信息管理</el-menu-item>
 					<!-- <el-menu-item index="/star">房源收藏</el-menu-item> -->
 					<el-menu-item v-on:click="logout" index="/test2">退出</el-menu-item>
+				</el-submenu>
+				<el-submenu  v-show="is_login" index='/workaddress'>
+					<template slot="title" v-if="!name">请选择工作地点</template>
+					<template slot="title" v-if="name">{{name}}</template>
+					<el-menu-item v-for="item in user_workaddress" :value="item.name" v-on:click="changeWork(item)">{{item.name}}</el-menu-item>
 				</el-submenu>
 			</el-menu>
 		</el-header>
@@ -102,6 +107,21 @@
 			//切换城市、
 			changeCity(val){
 				this.city_name = val;
+				location.reload();
+			},
+			//切换工作地点、
+			changeWork(val){
+				this.name = val.name;
+				localStorage.name = this.name;
+				localStorage.transport = val.transport;
+				localStorage.workaddress = val.address;
+				this.city_name = val.city_name;
+				localStorage.city_name = val.city_name;
+				this.area_name_1 = val.area_name_1;
+				localStorage.area_name_1 = this.area_name_1;
+				this.position = val.position;
+				localStorage.position = this.position;
+				location.reload();
 			},
 			logout(event){
 				this.username='';
@@ -226,21 +246,21 @@
 			}).then(res => {
 				this.city_list = res['data'];
 			}).catch(err => {
+				window.console.log('地区列表获取失败');
+			});
+			
+			
+			
+			// 用户工作地点
+			this.axios({
+			url: this.server_url+'/api/user/workaddress/',
+			method: 'get',
+			headers: {'Authorization': this.Authorization_token}
+			}).then(res => {
+				this.user_workaddress = res['data'];
+			}).catch(err => {
 				window.console.log(err);
-			})
-			if(this.user_workaddress.length==0)
-			{
-				// 用户工作地点
-				this.axios({
-				url: this.server_url+'/api/user/workaddress/',
-				method: 'get',
-				headers: {'Authorization': this.Authorization_token}
-				}).then(res => {
-					this.user_workaddress = res['data'];
-				}).catch(err => {
-					window.console.log(err);
-				});
-			}
+			});
 			this.axios({
 				url: this.server_url+'/api/user/require/',
 				headers: {'Authorization': this.Authorization_token},

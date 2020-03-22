@@ -7,8 +7,12 @@ import VueJsonp from 'vue-jsonp'
 import VueBetterScroll from 'vue2-better-scroll'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
+import BaiduMap from 'vue-baidu-map'
 var VueTouch = require('vue-touch')
-
+Vue.use(BaiduMap, {
+  // ak 是在百度地图开发者平台申请的密钥 详见 http://lbsyun.baidu.com/apiconsole/key */
+  ak: 'AktQnb3RWmVG2OsYcNcGXfZPFirATy4L'
+})
 Vue.use(VueTouch, {name: 'v-touch'})
 Vue.use(VueJsonp)
 Vue.use(VueAxios,axios)

@@ -21,9 +21,11 @@
 		<p class="mb15">
 			<strong>距离公司：</strong>{{ distance_text }} {{recommend}}
 		</p>
+		
 		<!-- <div v-for="(same,index) in same_result" >
 			{{same[0]}}|{{same[1]}}|{{same[2]}}|{{same[3]}}
-		</div> -->		
+		</div> 	 -->
+		
 		<p class="mb15"><strong>房屋结构：</strong>{{zufang.structure}}</p> 
 		<p class="mb15"><strong>室内面积：</strong>{{zufang.area}}</p>
 		<p class="mb15"><strong>装修情况：</strong>{{zufang.decoration}}</p> 
@@ -32,6 +34,21 @@
 		<div v-html="zufang.description"></div>
 		<el-button v-show="!is_star" type="warning" icon="el-icon-star-off" circle @click="addStar()"></el-button>
 		<el-button v-show="is_star" type="danger" icon="el-icon-delete" circle @click="deleteStar()"></el-button>
+		
+		<baidu-map :center="center" :zoom="zoom" class="bm-view">
+			 <bm-panorama></bm-panorama>
+			 <bm-control>
+				   <button @click="addZoom(1)">缩放至最大</button>
+				   <button @click="restartZoom(18)">还原</button>
+				   <button @click="addZoom(-1)">缩放至最小</button>
+			 </bm-control>
+			 <bm-marker :position="{lng: lng, lat: lat}" :dragging="true" animation="BMAP_ANIMATION_BOUNCE">
+				<bm-label content="房源在此处" :labelStyle="{color: 'red', fontSize : '16px'}" :offset="{width: -35, height: 30}"/>
+			 </bm-marker>
+			 <bm-marker :position="{lng: lng1, lat: lat1}" :dragging="true" animation="BMAP_ANIMATION_BOUNCE">
+			 	<bm-label content="工作地点在此处" :labelStyle="{color: 'blue', fontSize : '16px'}" :offset="{width: -35, height: 30}"/>
+			 </bm-marker>
+		</baidu-map>
 	</div>
 </template>
 
@@ -57,9 +74,23 @@
 				rent_contract:'',
 				is_star:0,
 				tags:[],
+				center: {lng: 0, lat: 0},
+				lng:0,
+				lat:0,
+				lng1:0,
+				lat1:0,
+				zoom: 18
 			}
 		},
 		methods:{
+			addZoom (level) {
+			  this.zoom -= level
+			},
+			restartZoom(level){
+				this.center['lat'] = this.lat
+				this.center['lng'] = this.lng
+				this.zoom = level
+			},
 			// 打印同线交通
 			log(){
 				for(var i=0;i<this.zufangTransportList.length;i++){
@@ -142,6 +173,12 @@
 					this.area_name_1 = res['data']['area_name_1'];
 					this.area_name_2 = res['data']['area_name_2'];
 					this.origins = res['data']['position'];
+					this.center['lat'] = res['data']['position'].split(",")[0];
+					this.center['lng'] = res['data']['position'].split(",")[1];
+					this.lat = res['data']['position'].split(",")[0];//small
+					this.lng = res['data']['position'].split(",")[1];//big
+					this.lat1 = localStorage.position.split(",")[0];//small
+					this.lng1 = localStorage.position.split(",")[1];//big
 					this.price = res['data']['price'];
 					this.rent_contract = res['data']['rent_contract'];
 				})
@@ -170,7 +207,7 @@
 							}
 						}
 					}
-					// window.console.log(same_result);
+					window.console.log(same_result);
 					this.same_result = same_result;
 				})
 			},
@@ -197,7 +234,6 @@
 						window.console.log('百度地图距离计算API请求失败');
 					})
 				}
-				this.getTransport();
 				// 先模拟用户
 				if(this.distance>=4000)
 				{
@@ -267,5 +303,8 @@
 	}
 	.left{
 		float:left;
+	}
+	.bm-view {
+	  height: 500px;
 	}
 </style>

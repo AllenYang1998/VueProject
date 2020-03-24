@@ -1,6 +1,6 @@
 <template>
 	<div id="test">
-		<el-tabs v-model="activeName" @tab-click="handleClick">
+		<el-tabs v-model="activeName">
 			<el-tab-pane label="房源匹配" name="first">
 				<MatchZufangList msg="Hello,这是一个房源列表"/>
 			</el-tab-pane>

@@ -1,42 +1,40 @@
 <template>
 	<div id="test2">
-		<v-touch v-touch:swipeleft="onSwipeLeft"  v-touch:SwipeRight="onSwipeRight">
-			<el-tabs v-model="activeName" @tab-click="handleClick">
-				<el-tab-pane label="登陆" name="first">
-					<el-form ref="form" :model="form" label-width="80px">
-						<el-form-item label="账号">
-							<el-input v-model="loginForm.username"></el-input>
-						</el-form-item>
-						<el-form-item label="密码">
-							<el-input v-model="loginForm.password" type="password"></el-input>
-						</el-form-item>
-						<el-form-item>
-							<el-button type="primary" @click="getInfo">登陆</el-button>
-						</el-form-item>
-					</el-form>
-					<br />
-					{{tips}}
-				</el-tab-pane>
-				<el-tab-pane label="注册" name="second">
-					<el-form ref="form" :model="form" label-width="80px">
-						<el-form-item label="账号">
-							<el-input v-model="registerForm.username"></el-input>
-						</el-form-item>
-						<el-form-item label="密码">
-							<el-input v-model="registerForm.password" type="password"></el-input>
-						</el-form-item>
-						<el-form-item label="确认密码">
-							<el-input v-model="rpassword" type="password"></el-input>
-						</el-form-item>
-						<el-form-item>
-							<el-button type="primary" @click="postInfo()">注册</el-button>
-						</el-form-item>
-					</el-form>
-					<br />
-					{{tips}}
-				</el-tab-pane>
-			</el-tabs>
-		</v-touch>
+		<el-tabs v-model="activeName">
+			<el-tab-pane label="登陆" name="first">
+				<el-form label-width="80px">
+					<el-form-item label="账号">
+						<el-input v-model="loginForm.username"></el-input>
+					</el-form-item>
+					<el-form-item label="密码">
+						<el-input v-model="loginForm.password" type="password"></el-input>
+					</el-form-item>
+					<el-form-item>
+						<el-button type="primary" @click="getInfo">登陆</el-button>
+					</el-form-item>
+				</el-form>
+				<br />
+				{{tips}}
+			</el-tab-pane>
+			<el-tab-pane label="注册" name="second">
+				<el-form label-width="80px">
+					<el-form-item label="账号">
+						<el-input v-model="registerForm.username"></el-input>
+					</el-form-item>
+					<el-form-item label="密码">
+						<el-input v-model="registerForm.password" type="password"></el-input>
+					</el-form-item>
+					<el-form-item label="确认密码">
+						<el-input v-model="rpassword" type="password"></el-input>
+					</el-form-item>
+					<el-form-item>
+						<el-button type="primary" @click="postInfo()">注册</el-button>
+					</el-form-item>
+				</el-form>
+				<br />
+				{{tips}}
+			</el-tab-pane>
+		</el-tabs>
 	</div>
 </template>
 
@@ -75,12 +73,6 @@
 			},
 		},
 		methods:{
-			onSwipeLeft(){
-				this.activeName='first'
-			},
-			onSwipeRight(){
-				this.activeName='second'
-			},
 			set(key, value, expired) {
 			    /*
 			    * set 存储方法
@@ -123,7 +115,7 @@
 					window.console.log(res);
 					window.console.log(this.registerForm);
 					window.console.log("注册成功");
-					this.msg=0;
+					this.activeName = 'first';
 				}).catch(err => {
 					this.tips = '注册失败';
 					window.console.log("注册失败");

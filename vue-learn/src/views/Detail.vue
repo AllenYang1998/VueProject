@@ -17,7 +17,6 @@
 			<font>{{zufang.area_name_2}}</font>
 		</p>
 		<br />
-		
 		<p class="mb15">
 			<strong>距离公司：</strong>{{ distance_text }} {{recommend}}
 		</p>
@@ -43,11 +42,14 @@
 				   <button @click="addZoom(-1)">缩放至最小</button>
 			 </bm-control>
 			 <bm-marker :position="{lng: lng, lat: lat}" :dragging="true" animation="BMAP_ANIMATION_BOUNCE">
-				<bm-label content="房源在此处" :labelStyle="{color: 'red', fontSize : '16px'}" :offset="{width: -35, height: 30}"/>
+				<bm-label content="租房" :labelStyle="{color: 'red', fontSize : '16px'}" :offset="{width: -35, height: 30}"/>
 			 </bm-marker>
 			 <bm-marker :position="{lng: lng1, lat: lat1}" :dragging="true" animation="BMAP_ANIMATION_BOUNCE">
-			 	<bm-label content="工作地点在此处" :labelStyle="{color: 'blue', fontSize : '16px'}" :offset="{width: -35, height: 30}"/>
+			 	<bm-label :content="name" :labelStyle="{color: 'blue', fontSize : '16px'}" :offset="{width: -35, height: 30}"/>
 			 </bm-marker>
+			 
+			 <bm-transit v-if="distance>=4000" policy="4" :start="{lng: lng, lat: lat}" :end="{lng: lng1, lat: lat1}" :location="city_name"></bm-transit>
+			 <bm-walking v-if="distance<=2000" :start="{lng: lng, lat: lat}" :end="{lng: lng1, lat: lat1}" :location="city_name"></bm-walking>
 		</baidu-map>
 	</div>
 </template>
@@ -79,7 +81,9 @@
 				lat:0,
 				lng1:0,
 				lat1:0,
-				zoom: 18
+				zoom: 18,
+				name:'',
+				city_name:localStorage.city_name,
 			}
 		},
 		methods:{
@@ -113,20 +117,15 @@
 			      return [...new Set([...set1].filter( x => set2.has(x)))];
 			},
 			isStar(){
-				this.zufang_id = this.$route.params['id'];
-				this.axios({
-					url: this.server_url+'/api/user/isstar/',
-					method: 'post',
-					data:{
-						zufang_id: this.zufang_id
-					},
-					headers: {'Authorization': this.Authorization_token}
-				}).then(res => {
-					// window.console.log(res)
-					if(res['status']==200){
-						this.is_star = 1;
+				var starTableData = JSON.parse(localStorage.starTableData);
+				var len = starTableData.length;
+				for(var i=0;i<len;i++)
+				{
+					if(starTableData[i]['id']==this.zufang['id']){
+						return 1;
 					}
-				})
+				}
+				return 0;
 			},
 			// 添加租房收藏
 			addStar(){
@@ -138,12 +137,32 @@
 					},
 					headers: {'Authorization': this.Authorization_token}
 				}).then(res => {
-					window.console.log('res');
+					var r = {'id':this.zufang['id'],
+							'img':this.zufang['img'],
+							'title': this.zufang['title'],
+							'rent_method': this.zufang['rent_method'],
+							'area_name_1': this.zufang['area_name_1'],
+							'area_name_2': this.zufang['area_name_2'],
+							'tags': this.zufang['tags'],
+							'price': this.zufang['price'],
+							'url': window.location.href}
+					var starTableData = JSON.parse(localStorage.starTableData);
+					starTableData.push(r);
+					localStorage.starTableData = JSON.stringify(starTableData);
 					this.is_star = 1;
 				})
 			},
 			// 取消收藏
 			deleteStar(){
+				var starTableData = JSON.parse(localStorage.starTableData);
+				var len = starTableData.length;
+				for(var i=0;i<len;i++){
+					if(starTableData[i]['id']==this.zufang['id']){
+						starTableData.splice(i,1);
+						break;
+					}
+				}
+				localStorage.starTableData = JSON.stringify(starTableData);
 				this.axios({
 					url: this.server_url + '/api/user/star',
 					method: 'delete',
@@ -152,9 +171,9 @@
 					},
 					headers: {'Authorization': this.Authorization_token}
 				}).then(res => {
-					window.console.log(res);
+					window.console.log('删除成功')
 					this.is_star = 0;
-				})
+				}) 
 			},
 			// 获取租房房源信息
 			getZufangInfo(){
@@ -181,6 +200,8 @@
 					this.lng1 = localStorage.position.split(",")[1];//big
 					this.price = res['data']['price'];
 					this.rent_contract = res['data']['rent_contract'];
+					this.name = localStorage.name;
+					this.city_name = localStorage.city_name;
 				})
 			},
 			// 获取租房周边交通信息
@@ -277,7 +298,7 @@
 		created() {
 			this.getZufangInfo();
 			this.getTransport();
-			this.isStar();
+			this.is_star = this.isStar();
 		},
 	}
 </script>

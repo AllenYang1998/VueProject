@@ -2,7 +2,7 @@
   <div class="home">
     <!-- <img alt="Vue logo" src="../assets/logo.png"> -->
     <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
-		<el-tabs v-model="activeName" @tab-click="handleClick">
+		<el-tabs v-model="activeName">
 			<el-tab-pane label="整租平均价" name="first">
 				<el-table
 					:data="zhengzu"

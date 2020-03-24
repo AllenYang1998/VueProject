@@ -6,7 +6,7 @@
 				  <el-divider></el-divider>
 				<el-col :span="8">
 				  <div class="grid-content ">
-					  <el-image :src="zufang.img" :fit="fit"></el-image>
+					  <el-image :src="zufang.img"></el-image>
 				  </div>
 				</el-col>
 				<el-col :span="16">

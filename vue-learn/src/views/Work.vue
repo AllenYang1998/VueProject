@@ -1,7 +1,3 @@
-<!--
-2020年3月3日
-删除直接删去图标即可，不要刷新
--->
 <template>
 	<div id="work">
 		<h3>用户个人信息管理</h3>
@@ -31,11 +27,9 @@
 				<el-table-column property="area" label="地区"></el-table-column>
 			  </el-table>
 			</el-dialog>
-			<!-- 个人工作管理表格 -->
 			
-			<el-table
-				:data="workTableData"
-				style="width: 100%">
+			<!-- 个人工作管理表格 -->
+			<el-table :data="workTableData" style="width: 100%">
 				<el-table-column prop="name" label="公司" width="180"></el-table-column>
 				<el-table-column prop="address" label="地址" width="180"></el-table-column>
 				<el-table-column prop="city_name" label="城市" width="180"></el-table-column>
@@ -49,6 +43,7 @@
 			</el-table>
 		  </el-collapse-item>
 		  
+		  <!-- 个人租房收藏管理 -->
 		  <el-collapse-item title="租房收藏管理" name="2">
 		    <el-table
 		    	:data="starTableData"
@@ -66,6 +61,7 @@
 		    </el-table>
 		  </el-collapse-item>
 		  
+		  <!-- 个人租房需求管理 -->
 		  <el-collapse-item title="租房需求管理" name="4">
 		    <el-form el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
 		    	<el-form-item label="价格条件" 
@@ -96,6 +92,7 @@
 		    	</el-form-item>
 		    </el-form>
 		  </el-collapse-item>
+		  
 		</el-collapse>
 	</div>
 </template>
@@ -113,14 +110,14 @@
 				bustransport:{},
 				
 				city_name:localStorage.city_name,
-				city_list:[],
+				city_list:JSON.parse(localStorage.city_list),
 				search:'',
 				dialogVisible: false,
 				search_workaddress:[],
 				position:localStorage.position,
 				
-				workTableData:{},
-				starTableData:{},
+				workTableData:[],
+				starTableData:[],
 				
 				// 租房需求数据
 				ruleForm: {
@@ -158,6 +155,7 @@
 				headers: {'Authorization': this.Authorization_token}
 				}).then(res => {
 					window.console.log(res);
+					// 删除 localStorage中的工作地点信息
 					location.reload();
 				}).catch(err => {
 					window.console.log(err);
@@ -175,7 +173,7 @@
 			},
 			// 删除租房收藏
 			handleDelete1(index, row) {
-				// console.log(index, row);
+				console.log(index, row);
 				this.axios({
 				url: this.server_url+'/api/user/star/',
 				method: 'delete',
@@ -184,11 +182,13 @@
 				},
 				headers: {'Authorization': this.Authorization_token}
 				}).then(res => {
+					this.starTableData.splice(index,1);
+					localStorage.starTableData = JSON.stringify(this.starTableData);
 					window.console.log(res);
 				}).catch(err => {
-					window.console.log(err);
+					window.console.log('收藏删除失败');
 				});
-				location.reload();
+				//location.reload();
 			},
 			// 获得工作地点坐标
 			getWorkAddressList(){
@@ -223,10 +223,9 @@
 				localStorage.name = this.name;
 				localStorage.area_name_1 = this.area_name_1;
 				localStorage.city_name = this.city_name;
-				
+				// 获取公交信息
 				this.$jsonp('https://api.map.baidu.com/place/v2/search',{
 					query:' ',
-					// tag:'地铁,公交,brt',
 					tag:'公交',
 					location:this.position,
 					ak: 'yEB3ABK1cIiDSGhYNMutGZwEfmW7QVPq',
@@ -238,7 +237,7 @@
 				}).catch(err => {
 					console.log(err)
 				});
-				
+				// 获取地铁信息
 				this.$jsonp('https://api.map.baidu.com/place/v2/search',{
 					query:' ',
 					// tag:'地铁,公交,brt',
@@ -269,6 +268,7 @@
 					},
 					headers: {'Authorization': " JWT "+sessionStorage.JWT_TOKEN}
 					}).then(res => {
+						window.console.log(res);
 						window.console.log('提交成功');
 					}).catch(err => {
 						this.tips = '提交失败';
@@ -289,7 +289,8 @@
 					headers: {'Authorization': this.Authorization_token},
 					method: 'post',
 				}).then(res => {
-					// window.console.log(res)
+					this.ruleForm = JSON.parse(res['config']['data']);
+					localStorage.ruleForm = res['config']['data'];
 					location.reload();
 				})
 			},
@@ -304,56 +305,62 @@
 			}
 		},
 		created() {
-			// 获得城市名
-			this.axios({
-			url: this.server_url+'/api/zufang/city/',
-			method: 'get',
-			}).then(res => {
-				this.city_list = res['data'];
-			}).catch(err => {
-				window.console.log(err);
-			})
+			
 			// 获取用户工作地点
-			this.axios({
-			url: this.server_url+'/api/user/workaddress',
-			method: 'get',
-			headers: {'Authorization': this.Authorization_token}
-			}).then(res => {
-				// for(var i=0;i<res['data'].length;i++)
-				// {
-				// 	res['data'][i]['transport'] = eval(res['data'][i]['transport']);
-				// }
-				// this.workaddresslist = res['data'];
-				this.workTableData=res['data'];
-			}).catch(err => {
-				window.console.log(err);
-			});
-			// 获取用户租房收藏
-			this.axios({
-			url: this.server_url+'/api/user/star/',
-			method: 'get',
-			headers: {'Authorization': this.Authorization_token}
-			}).then(res => {
-				// for(var i=0;i<res['data'].length;i++)
-				// {
-				// 	res['data'][i]['transport'] = eval(res['data'][i]['transport']);
-				// }
-				// this.workaddresslist = res['data'];
-				this.starTableData=res['data'];
-			}).catch(err => {
-				window.console.log(err);
-			});
-			// 住房需求数据获取
-			this.axios({
-				url: this.server_url+'/api/user/require/',
-				headers: {'Authorization': this.Authorization_token},
+			if(!localStorage.starTableData){
+				this.axios({
+				url: this.server_url+'/api/user/workaddress',
 				method: 'get',
-			}).then(res => {
-				this.ruleForm.price = res['data'][0]['price'];
-				this.ruleForm.rent_method = res['data'][0]['rent_method'];
-				this.ruleForm.transport_type = res['data'][0]['transport_type'].split(';');
-				window.console.log(res['data'][0])
-			})
+				headers: {'Authorization': this.Authorization_token}
+				}).then(res => {
+					this.workTableData=res['data'];
+					localStorage.workTableData = JSON.stringify(res['data']);
+				}).catch(err => {
+					window.console.log('获取用户工作地点失败');
+				});
+			}else{
+				this.workTableData = localStorage.workTableData;
+			}
+			
+			// 获取用户租房收藏
+			if(!localStorage.starTableData){
+				this.axios({
+				url: this.server_url+'/api/user/star/',
+				method: 'get',
+				headers: {'Authorization': this.Authorization_token}
+				}).then(res => {
+					this.starTableData=res['data'];
+					localStorage.starTableData = JSON.stringify(res['data']);
+				}).catch(err => {
+					window.console.log('获取用户租房收藏失败');
+				});
+			}else{
+				this.starTableData = JSON.parse(localStorage.starTableData)
+			}
+			
+			
+			// 需求数据获取
+			if(!localStorage.ruleForm){
+				window.console.log('请求用户租房需求数据');
+				this.axios({
+					url: this.server_url+'/api/user/require/',
+					headers: {'Authorization': this.Authorization_token},
+					method: 'get',
+				}).then(res => {
+					var r = res;
+					r['data'][0]['transport_type'] = r['data'][0]['transport_type'].split(';');
+					this.ruleForm.price = r['data'][0]['price'];
+					this.ruleForm.rent_method = r['data'][0]['rent_method'];
+					this.ruleForm.transport_type = r['data'][0]['transport_type']
+					localStorage.ruleForm = JSON.stringify(r['data'][0]);
+				});
+			}else{
+				window.console.log('加载本地请求用户租房需求数据');
+				var ruleForm = JSON.parse(localStorage.ruleForm);
+				this.ruleForm.price = ruleForm['price'];
+				this.ruleForm.rent_method = ruleForm['rent_method'];
+				this.ruleForm.transport_type = ruleForm['transport_type'];
+			}
 		}
 	}
 </script>

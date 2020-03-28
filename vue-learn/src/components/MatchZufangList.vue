@@ -50,23 +50,44 @@
 		},
 		// 页面初始化时进行的操作
 		created() {
+			/*
+			if(!localStorage.zufanglist){
+				this.axios({
+					url: this.server_url+'/api/zufang/test/',
+					data:{
+						transport:localStorage.transport,
+						city_name: localStorage.city_name,
+						price:localStorage.price,
+						rent_method:localStorage.rent_method,
+					},
+					headers: {'Authorization': this.Authorization_token},
+					method: 'post',
+				}).then(res => {
+					window.console.log(res['data'])
+					this.zufanglist = res['data'];
+					this.zufanglistsize = res['data'].length;
+					localStorage.zufanglist = JSON.stringify(res['data']);
+				});
+			}else{
+				this.zufanglist = JSON.parse(localStorage.zufanglist);
+			}
+			*/
 			this.axios({
-				url: this.server_url+'/api/zufang/test/',
-				data:{
-					transport:localStorage.transport,
-					city_name: localStorage.city_name,
-					price:localStorage.price,
-					rent_method:localStorage.rent_method,
-				},
-				headers: {'Authorization': this.Authorization_token},
-				method: 'post',
+			url: this.server_url+'/api/zufang/test/',
+			data:{
+				transport:localStorage.transport,
+				city_name: localStorage.city_name,
+				price:localStorage.price,
+				rent_method:localStorage.rent_method,
+			},
+			headers: {'Authorization': this.Authorization_token},
+			method: 'post',
 			}).then(res => {
 				window.console.log(res['data'])
 				this.zufanglist = res['data'];
 				this.zufanglistsize = res['data'].length;
-				localStorage.zufanglist = JSON.stringify(res['data']);
-				localStorage.zufanglistsize = res['data'].length;
-			})
+				// localStorage.zufanglist = JSON.stringify(res['data']);
+			});
 		}
 	}
 </script>

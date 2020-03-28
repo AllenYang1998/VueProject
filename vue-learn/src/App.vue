@@ -25,11 +25,13 @@
 					<!-- <el-menu-item index="/star">房源收藏</el-menu-item> -->
 					<el-menu-item v-on:click="logout" index="/test2">退出</el-menu-item>
 				</el-submenu>
-				<el-submenu  v-show="is_login" index='/workaddress'>
+				<el-menu-item v-if="!name">暂无工作地点</el-menu-item>
+				<el-menu-item v-if="name">{{name}}</el-menu-item>
+				<!-- <el-submenu  v-show="is_login" index='/workaddress'>
 					<template slot="title" v-if="!name">请选择工作地点</template>
 					<template slot="title" v-if="name">{{name}}</template>
 					<el-menu-item v-for="item in user_workaddress" :value="item.name" v-on:click="changeWork(item)">{{item.name}}</el-menu-item>
-				</el-submenu>
+				</el-submenu> -->
 			</el-menu>
 		</el-header>
 		<el-main>
@@ -129,22 +131,27 @@
 					window.console.log('地区列表获取失败');
 				});
 			}
-			
-			
 			// 用户工作地点
 			// 判断是否已经登录
 			if(sessionStorage.JWT_TOKEN){
-				this.axios({
-				url: this.server_url+'/api/user/workaddress/',
-				method: 'get',
-				headers: {'Authorization': this.Authorization_token}
-				}).then(res => {
-					this.user_workaddress = res['data'];
-					localStorage.user_workaddress = JSON.stringify(res['data']);
-				}).catch(err => {
-					window.console.log(err);
-				});
-				
+				/*
+				if(!localStorage.user_workaddress){
+					this.axios({
+					url: this.server_url+'/api/user/workaddress/',
+					method: 'get',
+					headers: {'Authorization': this.Authorization_token}
+					}).then(res => {
+						this.user_workaddress = res['data'];
+						localStorage.user_workaddress = JSON.stringify(res['data']);
+					}).catch(err => {
+						window.console.log(err);
+					});
+				}else{
+					window.console.log('加载本地工作信息数据');
+					this.user_workaddress = JSON.parse(localStorage.user_workaddress);
+				}
+				*/
+				/*
 				this.axios({
 					url: this.server_url+'/api/user/require/',
 					headers: {'Authorization': this.Authorization_token},
@@ -154,6 +161,30 @@
 					localStorage.rent_method = res['data'][0]['rent_method'];
 					localStorage.transport_type = res['data'][0]['transport_type'].split(';');
 				})
+				*/
+				if(!localStorage.ruleForm){
+					window.console.log('请求用户租房需求数据');
+					this.axios({
+					url: this.server_url+'/api/user/require/',
+					headers: {'Authorization': this.Authorization_token},
+					method: 'get',
+				}).then(res => {
+						localStorage.price = res['data'][0]['price'];
+						localStorage.rent_method = res['data'][0]['rent_method'];
+						localStorage.transport_type = res['data'][0]['transport_type'].split(';');
+						// 添加用户需求缓存
+						var r = res;
+						r['data'][0]['transport_type'] = r['data'][0]['transport_type'].split(';');
+						localStorage.ruleForm = JSON.stringify(r['data'][0]);
+					})
+				}else{
+					window.console.log('加载本地请求用户租房需求数据');
+					// 加载本地请求用户租房需求数据
+					var ruleForm = JSON.parse(localStorage.ruleForm);
+					localStorage.price = ruleForm['price'];
+					localStorage.rent_method = ruleForm['rent_method'];
+					localStorage.transport_type = ruleForm['transport_type'];
+				}
 			}
 		}
 	}

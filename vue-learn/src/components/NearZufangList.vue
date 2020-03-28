@@ -62,7 +62,27 @@
 			}).then(res => {
 				window.console.log(res)
 				this.nearzufanglist = res['data'];
-			})
+				// localStorage.nearzufanglist = JSON.stringify(res['data']);
+			});
+			/*
+			if(!localStorage.nearzufanglist){
+				this.axios({
+					url: this.server_url+'/api/zufang/near/',
+					data:{
+						workaddress:localStorage.workaddress,
+						price:localStorage.price,
+						rent_method:localStorage.rent_method,
+					},
+					headers: {'Authorization': this.Authorization_token},
+					method: 'post',
+				}).then(res => {
+					window.console.log(res)
+					this.nearzufanglist = res['data'];
+					localStorage.nearzufanglist = JSON.stringify(res['data']);
+				});
+			}else{
+				this.nearzufanglist = JSON.parse(localStorage.nearzufanglist);
+			}*/
 		}
 	}
 </script>

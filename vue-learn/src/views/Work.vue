@@ -29,7 +29,7 @@
 			</el-dialog>
 			
 			<!-- 个人工作管理表格 -->
-			<el-table :data="workTableData" style="width: 100%">
+			<el-table :data="user_workaddress" style="width: 100%">
 				<el-table-column prop="name" label="公司" width="180"></el-table-column>
 				<el-table-column prop="address" label="地址" width="180"></el-table-column>
 				<el-table-column prop="city_name" label="城市" width="180"></el-table-column>
@@ -116,7 +116,7 @@
 				search_workaddress:[],
 				position:localStorage.position,
 				
-				workTableData:[],
+				user_workaddress:JSON.parse(localStorage.user_workaddress),
 				starTableData:[],
 				
 				// 租房需求数据
@@ -145,7 +145,6 @@
 			},
 			// 删除指定实习工作地点
 			handleDelete(index, row) {
-				// console.log(index, row);
 				this.axios({
 				url: this.server_url+'/api/user/workaddress',
 				method: 'delete',
@@ -154,41 +153,12 @@
 				},
 				headers: {'Authorization': this.Authorization_token}
 				}).then(res => {
-					window.console.log(res);
-					// 删除 localStorage中的工作地点信息
-					location.reload();
+					this.user_workaddress.splice(index,1);
+					localStorage.user_workaddress = JSON.stringify(this.user_workaddress);
+					// localStorage.removeItem("name"); 
 				}).catch(err => {
 					window.console.log(err);
 				});
-			},
-			// 跳转到详细信息页面传递房源id
-			sendParams(index, row){
-				this.$router.push({
-					path:'/test/:id',
-					name:'detail',
-					params:{
-						id:row['id'],
-					}
-				})
-			},
-			// 删除租房收藏
-			handleDelete1(index, row) {
-				console.log(index, row);
-				this.axios({
-				url: this.server_url+'/api/user/star/',
-				method: 'delete',
-				data:{
-					zufang_id:row['id']
-				},
-				headers: {'Authorization': this.Authorization_token}
-				}).then(res => {
-					this.starTableData.splice(index,1);
-					localStorage.starTableData = JSON.stringify(this.starTableData);
-					window.console.log(res);
-				}).catch(err => {
-					window.console.log('收藏删除失败');
-				});
-				//location.reload();
 			},
 			// 获得工作地点坐标
 			getWorkAddressList(){
@@ -268,17 +238,54 @@
 					},
 					headers: {'Authorization': " JWT "+sessionStorage.JWT_TOKEN}
 					}).then(res => {
-						window.console.log(res);
+						this.user_workaddress = res['data'];
+						localStorage.user_workaddress = JSON.stringify(res['data']);
+						this.dialogVisible=false;
 						window.console.log('提交成功');
 					}).catch(err => {
 						this.tips = '提交失败';
-						window.console.log(err);
+						window.console.log('用户工作信息提交失败');
 					});
-					location.reload();
 				}).catch(err => {
 					console.log(err)
 				})
 			},
+			
+			
+
+				
+			// 跳转到详细信息页面传递房源id
+			sendParams(index, row){
+				this.$router.push({
+					path:'/test/:id',
+					name:'detail',
+					params:{
+						id:row['id'],
+					}
+				})
+			},
+			// 删除租房收藏
+			handleDelete1(index, row) {
+				console.log(index, row);
+				this.axios({
+				url: this.server_url+'/api/user/star/',
+				method: 'delete',
+				data:{
+					zufang_id:row['id']
+				},
+				headers: {'Authorization': this.Authorization_token}
+				}).then(res => {
+					this.starTableData.splice(index,1);
+					localStorage.starTableData = JSON.stringify(this.starTableData);
+					localStorage.name.clear();
+					// window.console.log(res);
+				}).catch(err => {
+					window.console.log('收藏删除失败');
+				});
+			},
+			
+			
+			
 			
 			//租房需求管理模块
 			submitForm(formName){
@@ -305,22 +312,21 @@
 			}
 		},
 		created() {
-			
 			// 获取用户工作地点
-			if(!localStorage.starTableData){
-				this.axios({
-				url: this.server_url+'/api/user/workaddress',
-				method: 'get',
-				headers: {'Authorization': this.Authorization_token}
-				}).then(res => {
-					this.workTableData=res['data'];
-					localStorage.workTableData = JSON.stringify(res['data']);
-				}).catch(err => {
-					window.console.log('获取用户工作地点失败');
-				});
-			}else{
-				this.workTableData = localStorage.workTableData;
-			}
+			// if(!localStorage.user_workaddress){
+			// 	this.axios({
+			// 	url: this.server_url+'/api/user/workaddress',
+			// 	method: 'get',
+			// 	headers: {'Authorization': this.Authorization_token}
+			// 	}).then(res => {
+			// 		this.user_workaddress=res['data'];
+			// 		localStorage.user_workaddress = JSON.stringify(res['data']);
+			// 	}).catch(err => {
+			// 		window.console.log('获取用户工作地点失败');
+			// 	});
+			// }else{
+			// 	this.user_workaddress = JSON.parse(localStorage.user_workaddress)
+			// }
 			
 			// 获取用户租房收藏
 			if(!localStorage.starTableData){

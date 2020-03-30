@@ -13,7 +13,7 @@ const routes = [
     path: '/',
     name: 'home',
     component: Home,
-	// history: false,//这个参数改为false就可以了
+	history: false,//这个参数改为false就可以了
   },
   {
     path: '/about',

@@ -139,8 +139,8 @@
 				localStorage.position = row['position'];
 				localStorage.workaddress = row['address'];
 				localStorage.transport = row['transport'];
-				localStorage.city_name = row['city_name']
-				localStorage.area_name_1 = row['area_name_1']
+				localStorage.city_name = row['city_name'];
+				localStorage.area_name_1 = row['area_name_1'];
 				location.reload();
 			},
 			// 删除指定实习工作地点
@@ -277,7 +277,6 @@
 				}).then(res => {
 					this.starTableData.splice(index,1);
 					localStorage.starTableData = JSON.stringify(this.starTableData);
-					localStorage.name.clear();
 					// window.console.log(res);
 				}).catch(err => {
 					window.console.log('收藏删除失败');

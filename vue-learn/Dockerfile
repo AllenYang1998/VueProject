@@ -1,9 +1,9 @@
 FROM node:10
-COPY ./ /vue-learn
-WORKDIR /vue-learn
+COPY ./ /app
+WORKDIR /app
 RUN npm install && npm run build
 
 FROM nginx
-RUN mkdir /vue-learn
-COPY --from=0 /vue-learn/dist /vue-learn
+RUN mkdir /app
+COPY --from=0 /app/dist /app
 COPY nginx.conf /etc/nginx/nginx.conf

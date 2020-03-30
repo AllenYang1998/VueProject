@@ -62,7 +62,7 @@
 		  </el-collapse-item>
 		  
 		  <!-- 个人租房需求管理 -->
-		  <el-collapse-item title="租房需求管理" name="4">
+		 <el-collapse-item title="租房需求管理" name="4">
 		    <el-form el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
 		    	<el-form-item label="价格条件" 
 		    		:rules="[
@@ -298,7 +298,9 @@
 				}).then(res => {
 					this.ruleForm = JSON.parse(res['config']['data']);
 					localStorage.ruleForm = res['config']['data'];
-					location.reload();
+					localStorage.price = this.ruleForm['price'];
+					localStorage.rent_method = this.ruleForm['rent_method'];
+					localStorage.transport_type = this.ruleForm['transport_type'];
 				})
 			},
 			resetForm(formName) {
@@ -312,21 +314,6 @@
 			}
 		},
 		created() {
-			// 获取用户工作地点
-			// if(!localStorage.user_workaddress){
-			// 	this.axios({
-			// 	url: this.server_url+'/api/user/workaddress',
-			// 	method: 'get',
-			// 	headers: {'Authorization': this.Authorization_token}
-			// 	}).then(res => {
-			// 		this.user_workaddress=res['data'];
-			// 		localStorage.user_workaddress = JSON.stringify(res['data']);
-			// 	}).catch(err => {
-			// 		window.console.log('获取用户工作地点失败');
-			// 	});
-			// }else{
-			// 	this.user_workaddress = JSON.parse(localStorage.user_workaddress)
-			// }
 			
 			// 获取用户租房收藏
 			if(!localStorage.starTableData){
@@ -357,7 +344,10 @@
 					r['data'][0]['transport_type'] = r['data'][0]['transport_type'].split(';');
 					this.ruleForm.price = r['data'][0]['price'];
 					this.ruleForm.rent_method = r['data'][0]['rent_method'];
-					this.ruleForm.transport_type = r['data'][0]['transport_type']
+					this.ruleForm.transport_type = r['data'][0]['transport_type'];
+					localStorage.price = res['data'][0]['price'];
+					localStorage.rent_method = res['data'][0]['rent_method'];
+					localStorage.transport_type = res['data'][0]['transport_type'];
 					localStorage.ruleForm = JSON.stringify(r['data'][0]);
 				});
 			}else{
@@ -366,6 +356,9 @@
 				this.ruleForm.price = ruleForm['price'];
 				this.ruleForm.rent_method = ruleForm['rent_method'];
 				this.ruleForm.transport_type = ruleForm['transport_type'];
+				localStorage.price = ruleForm['price'];
+				localStorage.rent_method = ruleForm['rent_method'];
+				localStorage.transport_type = ruleForm['transport_type'];
 			}
 		}
 	}

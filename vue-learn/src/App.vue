@@ -10,7 +10,7 @@
 				text-color="#fff"
 				active-text-color="#ffd04b"
 				theme="dark">  
-				<el-submenu index='/city_name'>
+				<el-submenu index='city_name'>
 					<template slot="title" v-if="!city_name">请选择城市</template>
 					<template slot="title" v-if="city_name">{{city_name}}</template>
 					<el-menu-item v-for="item in city_list" :value="item.city_name" v-on:click="changeCity(item.city_name)">{{item.city_name}}</el-menu-item>
@@ -134,7 +134,7 @@
 			// 用户工作地点
 			// 判断是否已经登录
 			if(sessionStorage.JWT_TOKEN){
-				/*
+
 				if(!localStorage.user_workaddress){
 					this.axios({
 					url: this.server_url+'/api/user/workaddress/',
@@ -150,7 +150,7 @@
 					window.console.log('加载本地工作信息数据');
 					this.user_workaddress = JSON.parse(localStorage.user_workaddress);
 				}
-				*/
+
 				/*
 				this.axios({
 					url: this.server_url+'/api/user/require/',
@@ -162,6 +162,7 @@
 					localStorage.transport_type = res['data'][0]['transport_type'].split(';');
 				})
 				*/
+			   /*
 				if(!localStorage.ruleForm){
 					window.console.log('请求用户租房需求数据');
 					this.axios({
@@ -185,6 +186,7 @@
 					localStorage.rent_method = ruleForm['rent_method'];
 					localStorage.transport_type = ruleForm['transport_type'];
 				}
+				*/
 			}
 		}
 	}

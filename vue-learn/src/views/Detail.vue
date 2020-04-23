@@ -16,10 +16,7 @@
 			<font>{{zufang.area_name_1}}</font>-
 			<font>{{zufang.area_name_2}}</font>
 		</p>
-		<br />
-		<p class="mb15">
-			<strong>距离公司：</strong>{{ distance_text }} {{recommend}}
-		</p>
+		
 		
 		<!-- <div v-for="(same,index) in same_result" >
 			{{same[0]}}|{{same[1]}}|{{same[2]}}|{{same[3]}}
@@ -33,7 +30,9 @@
 		<div v-html="zufang.description"></div>
 		<el-button v-show="!is_star" type="warning" icon="el-icon-star-off" circle @click="addStar()"></el-button>
 		<el-button v-show="is_star" type="danger" icon="el-icon-delete" circle @click="deleteStar()"></el-button>
-		
+		<p class="mb15">
+			<strong>距离公司：</strong>{{ distance_text }} {{recommend}}
+		</p>
 		<baidu-map :center="center" :zoom="zoom" class="bm-view">
 			 <bm-panorama></bm-panorama>
 			 <bm-control>

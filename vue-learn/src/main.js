@@ -20,8 +20,8 @@ Vue.use(VueBetterScroll)
 Vue.config.productionTip = false
 Vue.use(ElementUI);
 
-Vue.prototype.server_url = 'http://120.77.45.151:8081';
-// Vue.prototype.server_url = 'http://127.0.0.1:8081';
+// Vue.prototype.server_url = 'http://120.77.45.151:8081';
+Vue.prototype.server_url = 'http://127.0.0.1:8081';
 Vue.prototype.Authorization_token = " JWT " + sessionStorage.JWT_TOKEN;
 
 new Vue({
